@@ -23,7 +23,7 @@ header img{
 
 header nav{
     padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     border-bottom: 1px dotted #be9d7c;
 }
 
@@ -52,7 +52,7 @@ header nav ul li a{
 /*MAIN*/
 main{
     padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     border-bottom: 1px dotted #be9d7c;
 }
 main h1{
