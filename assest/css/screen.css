@@ -73,4 +73,20 @@ main a{
 footer{
     text-align: center;
     line-height: 1.5rem;
+    margin-bottom: 1rem;
+
+}
+
+footer h2{
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+footer p{
+    font-size: 1rem;
+}
+
+footer a{
+    color: #be9d7c;
 }
