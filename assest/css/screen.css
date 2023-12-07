@@ -15,7 +15,7 @@ header{
 }
 
 header img{
-    width: 35%;
+    width: 25%;
     margin-left: auto;
     margin-right: auto;
     
@@ -27,11 +27,13 @@ header nav{
     border-bottom: 1px dotted #be9d7c;
 }
 
+header nav ul{
+    padding: 1rem 1.5rem;
+}
+
 header nav ul li{
     font-size: 1.1rem;
     display: inline-block;
-    padding: 1.5rem;
-    background-color: #be9d7c;
     color: black;
 }
 
@@ -41,8 +43,10 @@ header nav ul li:nth-child(1), header nav ul li:nth-child(2){
 
 header nav ul li a{
     text-decoration: none;
+    background-color: #be9d7c;
+
     color: black;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 /*MAIN*/
