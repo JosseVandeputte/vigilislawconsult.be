@@ -1,5 +1,5 @@
 body{
-    width: 50%;
+    width: 60%;
     background-color: #203465;
     margin-left: auto;
     margin-right: auto;
@@ -15,7 +15,7 @@ header{
 }
 
 header img{
-    width: 25%;
+    width: 35%;
     margin-left: auto;
     margin-right: auto;
     
@@ -35,6 +35,8 @@ header nav ul li{
     font-size: 1.1rem;
     display: inline-block;
     color: black;
+    width: 100%;
+    
 }
 
 header nav ul li:nth-child(1), header nav ul li:nth-child(2){
@@ -89,4 +91,22 @@ footer p{
 
 footer a{
     color: #be9d7c;
+}
+
+@media (max-width:600px)  {
+    body{
+        width: 70%;
+        font-size: 0.85em;    
+    }
+
+    header img{
+        width: 50%;
+    }
+    
+    header nav ul li{
+        font-size: 0.90em;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1em;
+    }
 }
