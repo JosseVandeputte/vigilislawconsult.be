@@ -126,6 +126,7 @@ footer a{
     header nav ul li{
         font-size: 1.1rem;
         display: inline-block;
+        flex-direction: row;
         color: black;
         width: 100%;
     }
