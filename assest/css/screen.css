@@ -110,3 +110,23 @@ footer a{
         margin-bottom: 1em;
     }
 }
+
+@media (min-width: 601px){
+    body{
+        width: 60%;
+        font-size: 1.15em;    
+    }
+
+    header img{
+        width: 35%;
+        margin-left: auto;
+        margin-right: auto;    
+    }
+    
+    header nav ul li{
+        font-size: 1.1rem;
+        display: inline-block;
+        color: black;
+        width: 100%;
+    }
+}
