@@ -5,16 +5,29 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-
 body{
     width: 70%;
     background-color: var(--main-color);
     margin-left: auto;
     margin-right: auto;
     color: var(--secondary-color);
-    /* font-family: Helvetica, Arial, Georgia, Tahoma, "Roboto Light", sans-serif; */
     font-family: 'Roboto', sans-serif;
-    font-size: 0.85rem;
+    /* font-family: Helvetica, Arial, Georgia, Tahoma, "Roboto Light", sans-serif; */
+}
+
+body, textarea{
+    font-size: 0.85em;
+}
+
+/*GENERAL*/
+.active{
+    background-color: var(--main-color);
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+.hidden{
+    display: none;
 }
 
 /*HEADER*/
@@ -28,7 +41,7 @@ header{
 }
 
 header a img{
-    width: 75%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -45,7 +58,6 @@ header nav ul{
 }
 
 header nav ul li{
-    
     display: flex;
     flex-direction: column;
     color: black;
@@ -53,9 +65,10 @@ header nav ul li{
     width: 100%;
 }
 
-header nav ul a:hover{
+header nav ul li a:hover{
     background-color: var(--main-color);
     color: var(--secondary-color);
+    font-weight: bold;
 }
 
 header nav ul li:nth-child(1), header nav ul li:nth-child(2){
@@ -70,7 +83,7 @@ header nav ul li a{
     font-size: 1.15em;
     border: 1px solid #be9d7c;
     border-radius: .4em;
-    transition: all 0.2s ease;
+    transition: all 0.5s ease;
 }
 
 /*MAIN*/
@@ -91,6 +104,67 @@ main p{
 
 main a{
     color: var(--secondary-color);
+}
+
+/*FORM*/
+
+form{ /*delete when publishing*/
+    border: 1px solid var(--secondary-color);
+    padding: 1rem;
+}
+
+form, form input, form textarea {
+    font-family: 'Roboto', sans-serif;
+}
+
+form div{
+    display: grid;
+}
+
+form label{
+    display: block;
+    margin: 0.75em 0em;
+}
+
+form input[type="text"], form input[type="tel"],form input[type="email"], form textarea{
+    padding: .5em;
+}
+
+form textarea{
+    max-width: 100%;
+    min-width: 90%;
+    min-height: 10em;
+    resize: vertical;
+    line-height: 1.5em;
+}
+
+form input[type="submit"]{
+    background-color: var(--secondary-color);
+    color: var(--main-color);
+    padding: 1em 5.75em;
+    margin-top: 1em;
+    border: 1px solid var(--secondary-color);
+    border-radius: 0.4em;
+    cursor: pointer;
+    transition: background-color 0.5s ease;    
+}
+
+form input[type="submit"]:hover{
+    background-color: var(--main-color);
+    color: var(--secondary-color);
+}
+
+#confirmation-section h2{
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: var(--secondary-color);
+}
+
+#confirmation-section p{
+    text-align: center;
+    line-height: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 /*FOOTER*/
@@ -119,21 +193,29 @@ footer a{
 @media (min-width:650px) {
     body{
         width: 70%;
-        font-size: 0.85em;    
+           
+    }
+
+    textarea, body{
+        font-size: 0.9em; 
     }
 
     header a img{
-        width: 35%;
+        width: 30%;
     }
 
     header nav ul{
-        display: flex;
-        /* flex-direction: row; */
+        /* display: flex;
+         flex-direction: row; 
         justify-content: center;
         align-items: center;
         width: auto;
         margin-left: auto;
-        margin-right: auto;
+        margin-right: auto; */
+
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 1rem;
     }
     
     header nav ul li{
