@@ -111,6 +111,8 @@ main a{
 form{ /*delete when publishing*/
     border: 1px solid var(--secondary-color);
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 form, form input, form textarea {
@@ -124,10 +126,13 @@ form div{
 form label{
     display: block;
     margin: 0.75em 0em;
+    font-size: 1.05rem;
 }
 
 form input[type="text"], form input[type="tel"],form input[type="email"], form textarea{
     padding: .5em;
+    font-size: 1.05rem;
+    border-radius: 5px;
 }
 
 form textarea{
@@ -145,8 +150,9 @@ form input[type="submit"]{
     margin-top: 1em;
     border: 1px solid var(--secondary-color);
     border-radius: 0.4em;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.5s ease;    
+    transition: background-color 0.7s ease;    
 }
 
 form input[type="submit"]:hover{
@@ -190,7 +196,7 @@ footer a{
 }
 
 /* MEDIA QUERIES */
-@media (min-width:650px) {
+@media (min-width:900px) {
     body{
         width: 70%;
            
@@ -206,7 +212,7 @@ footer a{
 
     header nav ul{
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         grid-gap: 1rem;
     }
     
