@@ -1,0 +1,17 @@
+<div style="width: 50%; margin-left: auto; margin-right: auto;">
+<h1 style="font-size: 2.75rem;">Ons aanbod</h1>
+<p style="font-size: 1em;">a. Lessen geven inzake bewakingswetgeving en wetgeving privédetective en alle relevante wetgeving;</p>
+<p style="font-size: 1em;">b. Coaching verstrekken aan leerlingen die dit nodig hebben, vooral ter voorbereiding van het examen bij SELOR (onder de vergunning van een erkende school);</p>
+<p style="font-size: 1em;">c. Het begeleiden van vergunningsaanvragen voor bewakingsondernemingen en interne diensten alsook voor privédetectives;</p>
+<p style="font-size: 1em;">d. Juridisch advies verstrekken aan de advocatuur inzake deze materie (bv. bij vervolging van bewakingsagenten of detectives);</p>
+<p style="font-size: 1em;">e. Besluiten in rechtsgedingen voorbereiden aangaande voornoemde materies;</p>
+<p style="font-size: 1em;">f. Juridische adviezen verstrekken aan overheden omtrent het inzetten van bewakingsondernemingen of het oprichten van interne bewakingsdiensten (bv. musea);</p>
+<p style="font-size: 1em;">g. Juridische adviezen verstrekken aan lokale overheden m.b.t. de organisatie van een dienst gemeenschapswachten en/of het inzetten van deze gemeenschapswachten, gemeentelijke administratieve sancties, opstellen van politieverordeningen en/of politiecodexen, enz. ;</p>
+<p style="font-size: 1em;">h. Adviezen verstrekken aan lokale overheden m.b.t. de implementatie van "bestuurlijke handhaving" in de strijd tegen georganiseerde criminaliteit;</p>
+<p style="font-size: 1em;">i. Juridische adviezen verstrekken m.b.t. de organisatie van het politielandschap, inzonderheid de samensmelting van gemeenten en de invloed ervan op de organisatie van politiezones; het samensmelten van politiezones of het splitsen van politiezones;</p>
+<p style="font-size: 1em;">j. Juridische adviezen verstrekken m.b.t. de aanstelling, bevoegdheden en werkzaamheden van bijzondere veldwachters;</p>
+<p style="font-size: 1em;">k. Opleiding verstrekken waaronder (juridische) vakken aan politiescholen inzake ambulancier, brandweer, politie, bijzondere veldwachters en gemeenschapswachten;</p>
+<p style="font-size: 1em;">l. De ontwikkeling van studie- en oefenboeken betreffende de diverse opleidingen in private veiligheid;;</p>
+<p style="font-size: 1em;">m. Artikelen voor vaktijdschriften schrijven inzake veiligheid in het algemeen, politie en private veiligheid;</p>
+<p style="font-size: 1em;">n. Geven van lezingen inzake publieke en private veiligheid alsook de organisatie van studiedagen en/of -momenten.</p>
+</div>

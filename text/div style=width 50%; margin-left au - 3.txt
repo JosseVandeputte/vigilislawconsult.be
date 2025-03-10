@@ -1,0 +1,5 @@
+<div style="width: 50%; margin-left: auto; margin-right: auto;">
+<h1 style="font-size: 2.75rem;">Wat kost het?</h1>
+<p style="font-size: 1em;">Voor “gewone” desktop adviezen (studie dossier en uitschrijven van het advies) wordt € 100/uur aangerekend.</p>
+<p style="font-size: 1em;">Voor grotere projecten wordt de prijs in overleg met de klant bepaald.</p>
+</div>
