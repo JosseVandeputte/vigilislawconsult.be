@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./footer.module.css";
 
 export default function Footer() {
@@ -8,19 +9,19 @@ export default function Footer() {
                 <div className={styles.footerLinks}>
                     <ul>
                         <li>
-                            <a href="/#wie-ben-ik">Wie ben ik?</a>
+                            <Link href="/#wie-ben-ik">Wie ben ik?</Link>
                         </li>
                         <li>
-                            <a href="/#ons-aanbod">Ons Aanbod</a>
+                            <Link href="/#ons-aanbod">Ons Aanbod</Link>
                         </li>
                         <li>
-                            <a href="/#wat-kost-het">Wat kost het?</a>
+                            <Link href="/#wat-kost-het">Wat kost het?</Link>
                         </li>
                         <li>
-                            <a href="/#nuttige-links">Nuttige Links & Info</a>
+                            <Link href="/#nuttige-links">Nuttige Links & Info</Link>
                         </li>
                         <li>
-                            <a href="/privacy">Privacybeleid / Gebruiksvoorwaarden / Cookiebeleid </a>
+                            <Link href="/privacy">Privacybeleid / Gebruiksvoorwaarden / Cookiebeleid</Link>
                         </li>
                     </ul>
                 </div>
@@ -34,14 +35,14 @@ export default function Footer() {
                     <p>Rekeningnummer: BE51 7340 7260 9862</p>
                 </div>
                 <div className={styles.footerLogo}>
-                    <a href="">
+                    <Link href="/">
                         <Image 
                         src="/K-Vigilis-Law-Consult_Logo.jpg" 
                         alt={"logo"} 
                         width={200} 
                         height={200}
                         />
-                    </a>                
+                    </Link>                
                 </div>
             </div>
             <div className={styles.footerCopyright}>
