@@ -1,0 +1,51 @@
+.footer {
+    background-color: var(--blue);
+    color: var(--brown);
+}
+
+.footerContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 2rem;
+}
+
+.footerLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footerLinks li {
+    margin: 1.5rem 0;
+}
+
+.footerContact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.footerContact h3 {
+    margin-bottom: 0.5rem;
+}
+
+.footerContact p {
+    margin: 0.175rem 0;
+}
+
+.footerContact a {
+    color: var(--brown);
+    text-decoration: underline;
+}
+
+.footerLogo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footerCopyright {
+    text-align: center;
+    padding-bottom: 1rem;
+}
