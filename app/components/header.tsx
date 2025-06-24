@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./header.module.css";
 
 export default function Header() {
@@ -7,26 +8,26 @@ export default function Header() {
             <nav>
                 <ul className={styles.navList}>
                     <li>
-                        <a href="/#wie-ben-ik">Wie ben ik?</a>
+                        <Link href="/#wie-ben-ik">Wie ben ik?</Link>
                     </li>
                     <li>
-                        <a href="/#ons-aanbod">Ons Aanbod</a>
+                        <Link href="/#ons-aanbod">Ons Aanbod</Link>
                     </li>
                     <li>
-                        <a href="/">
+                        <Link href="/">
                             <Image 
                             src="/K-Vigilis-Law-Consult_Logo.jpg" 
                             alt={"logo"} 
                             width={100} 
                             height={100}
                             />
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="/#wat-kost-het">Wat kost het?</a>
+                        <Link href="/#wat-kost-het">Wat kost het?</Link>
                     </li>
                     <li>
-                        <a href="/#nuttige-links">Nuttige Links & Info</a>
+                        <Link href="/#nuttige-links">Nuttige Links & Info</Link>
                     </li>
                 </ul>
             </nav>
