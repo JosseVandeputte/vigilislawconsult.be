@@ -2,7 +2,7 @@
 :root {
   --blue: #1E2D40;
   --brown: #CFA177;
-  --white: #F4F2F0;
+  --white: #f6f6f2;
 }
 
 html,
@@ -18,6 +18,13 @@ body {
   background: var(--white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  background-color: var(--white);
+  margin: 1rem auto;
+  max-width: 80vw;
+  min-height: calc(100vh - 14vh - 31vh - 2rem);
 }
 
 * {

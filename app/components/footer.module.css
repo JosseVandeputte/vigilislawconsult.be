@@ -1,4 +1,5 @@
 .footer {
+    height: 31vh;
     background-color: var(--blue);
     color: var(--brown);
 }
@@ -6,7 +7,7 @@
 .footerContainer {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    padding: 2rem;
+    padding-top: 2rem;
 }
 
 .footerLinks {
