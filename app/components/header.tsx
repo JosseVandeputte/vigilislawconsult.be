@@ -13,13 +13,13 @@ export default function Header() {
                     <li>
                         <Link href="/#ons-aanbod">Ons Aanbod</Link>
                     </li>
-                    <li>
+                    <li className={styles.logo}>
                         <Link href="/">
                             <Image 
-                            src="/K-Vigilis-Law-Consult_Logo.jpg" 
+                            src="/Vigilis-Law-Consult_Logo.png" 
                             alt={"logo"} 
-                            width={100} 
-                            height={100}
+                            width={80} 
+                            height={80}
                             />
                         </Link>
                     </li>
