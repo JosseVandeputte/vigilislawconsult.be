@@ -33,6 +33,9 @@ export default function Footer() {
                     <p>Email: <a href="mailto:info@vigilislawconsult.be">info@vigilislawconsult.be</a></p>
                     <p>Ondernemingsnummer: BE0804.955.587</p>
                     <p>Rekeningnummer: BE51 7340 7260 9862</p>
+                    <p className={styles.footerCopyright}>
+                        &copy; {new Date().getFullYear()} Vigilis Law Consult
+                    </p>
                 </div>
                 <div className={styles.footerLogo}>
                     <Link href="/">
@@ -44,11 +47,6 @@ export default function Footer() {
                         />
                     </Link>                
                 </div>
-            </div>
-            <div className={styles.footerCopyright}>
-                <p>
-                    &copy; {new Date().getFullYear()} Vigilis Law Consult. All rights reserved.
-                </p>
             </div>
         </footer>
     );

@@ -39,13 +39,13 @@
     text-decoration: underline;
 }
 
+p.footerCopyright {
+    margin-top: 1rem;
+}
+
 .footerLogo {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.footerCopyright {
-    text-align: center;
-    padding-bottom: 1rem;
-}
