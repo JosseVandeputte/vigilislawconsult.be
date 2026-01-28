@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function WieBenIk() {
     return (
-        <section id="wie-ben-ik" className={styles['wie-ben-ik']}>
+        <section id="wie-ben-ik" className={styles.wieBenIk}>
             <h2>Wie ben ik?</h2>
             <div className={styles.content}>
                 <div className={styles.container}>
