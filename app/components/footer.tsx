@@ -34,7 +34,7 @@ export default function Footer() {
                     <p>Ondernemingsnummer: BE0804.955.587</p>
                     <p>Rekeningnummer: BE51 7340 7260 9862</p>
                     <p className={styles.footerCopyright}>
-                        &copy; {new Date().getFullYear()} Vigilis Law Consult
+                        &copy; {new Date().getFullYear()} Vigilis Law Consult CommV.
                     </p>
                 </div>
                 <div className={styles.footerLogo}>
