@@ -25,6 +25,7 @@ main {
   margin: 1rem auto;
   max-width: 80vw;
   min-height: calc(100vh - 8rem - 19.375rem - 2rem);
+  line-height: 1.75rem;
 }
 
 * {
