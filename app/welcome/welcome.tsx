@@ -2,6 +2,13 @@ import Image from "next/image";
 import styles from "./welcome.module.css";
 
 export default function Welcome() {
+    const scrollToSection = (sectionId: string) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <section id="home"  className={styles.welcome}>
             <div className={styles.titles}>
@@ -9,7 +16,7 @@ export default function Welcome() {
                 <h1>Vigilis Law Consult</h1>
             </div>
             <div className={styles.buttons}>
-                <button className={styles.infoButton}>Over ons</button>
+                <button className={styles.infoButton} onClick={() => scrollToSection('wie-ben-ik')}>Over ons</button>
                 <button className={styles.reservationButton}>Reservatie</button>
             </div>
             <div className={styles.arrows}>
