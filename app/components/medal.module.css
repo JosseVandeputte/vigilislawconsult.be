@@ -1,0 +1,11 @@
+.medal {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: .75rem;
+
+    circle, path {
+        fill: none;
+        stroke: var(--brown);
+        stroke-width: 2px;
+    }
+}
