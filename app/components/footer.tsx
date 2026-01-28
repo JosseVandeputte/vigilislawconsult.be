@@ -46,7 +46,7 @@ export default function Footer() {
                     <p>Naam: Filip Scheemaker</p>
                     <p>Adres: 18-oktoberstraat 27 <br/> 8000 Brugge</p> 
                     <p>Telefoon: <a href="tel:+32 470 84 69 32">+32 470 84 69 32</a></p>
-                    <p>Email: <a href="mailto:info@vigilislawconsult.be">info@vigilislawconsult.be</a></p>
+                    <p>Email: <a href="mailto:&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;">&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;</a></p>
                     <p>Ondernemingsnummer: BE0804.955.587</p>
                     <p>Rekeningnummer: BE51 7340 7260 9862</p>
                     <p className={styles.footerCopyright}>

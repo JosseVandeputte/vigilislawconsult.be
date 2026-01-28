@@ -22,7 +22,7 @@ export default function WatKostHet() {
                 </div>
                 <div className={styles.groteProjecten}>
                     <h3>Grote Projecten</h3>
-                    <p>Voor meer informatie gelieve mij te contacteren via mail: <Link href="mailto:info@vigilislawconsult.be?subject=Aanvraag groot project">info@vigilislawconsult.be</Link></p>
+                    <p>Voor meer informatie gelieve mij te contacteren via mail: <Link href="mailto:&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;?subject=Aanvraag groot project">&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;</Link></p>
                     <span className={styles.prijs}>
                         Prijs in overleg besproken
                     </span>
