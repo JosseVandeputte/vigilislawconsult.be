@@ -1,5 +1,5 @@
 .header {
-    height: 14vh;
+    height: 8rem;
     background-color: var(--blue);
     color: var(--brown);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -43,13 +43,4 @@
 
 .navList li:not(.logo) a:hover::after {
     width: 100%;
-}
-
-
-@media (max-width: 1030px) {
-    .navList {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
 }

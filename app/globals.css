@@ -24,7 +24,7 @@ main {
   background-color: var(--white);
   margin: 1rem auto;
   max-width: 80vw;
-  min-height: calc(100vh - 14vh - 31vh - 2rem);
+  min-height: calc(100vh - 8rem - 19.375rem - 2rem);
 }
 
 * {
