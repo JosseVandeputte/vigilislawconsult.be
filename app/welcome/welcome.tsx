@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./welcome.module.css";
 
 export default function Welcome() {
@@ -17,7 +18,8 @@ export default function Welcome() {
             </div>
             <div className={styles.buttons}>
                 <button className={styles.infoButton} onClick={() => scrollToSection('wie-ben-ik')}>Over ons</button>
-                <button className={styles.reservationButton}>Reservatie</button>
+                {/* TODO remove coming soon text & add link to /reservatie*/}
+                <Link href="#" className={styles.reservationButton}>Reservatie <br /> (coming soon) </Link>
             </div>
             <div className={styles.arrows}>
                 <Image src="/arrow.png" alt="arrow for design" width={800} height={800}/>
