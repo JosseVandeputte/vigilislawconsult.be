@@ -1,5 +1,5 @@
 .footer {
-    height: 19.375rem;
+    height: auto;
     background-color: var(--blue);
     color: var(--brown);
 }
@@ -41,7 +41,7 @@
 }
 
 p.footerCopyright {
-    margin-top: 1rem;
+    margin-top: 2rem;
 }
 
 .footerLogo {

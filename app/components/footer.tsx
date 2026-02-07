@@ -37,6 +37,10 @@ export default function Footer() {
                             <Link href="/#nuttige-links" onClick={(e) => scrollToSection(e, 'nuttige-links')}>Nuttige Links & Info</Link>
                         </li>
                         <li>
+                            {/* TODO remove coming soon text & add link to /reservatie*/}
+                            <Link href="/#">Reservatie - (coming soon)</Link>
+                        </li>
+                        <li>
                             <Link href="/privacy">Privacybeleid / Gebruiksvoorwaarden / Cookiebeleid</Link>
                         </li>
                     </ul>
