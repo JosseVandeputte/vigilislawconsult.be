@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 type AuditParams = {
@@ -5,7 +6,7 @@ type AuditParams = {
   entityType: string;
   entityId: string;
   message: string;
-  data?: Record<string, unknown>;
+  data?: Prisma.InputJsonValue;
 };
 
 export const logAudit = async (params: AuditParams) => {
