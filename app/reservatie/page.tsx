@@ -64,6 +64,11 @@ export default function Reservatie() {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
     };
 
+    const goToToday = () => {
+        const today = new Date();
+        setCurrentDate(today);
+    };
+
     const handleDateClick = (day: number) => {
         const selected = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
         setSelectedDate(selected);
@@ -97,6 +102,9 @@ export default function Reservatie() {
                         <button onClick={previousMonth} className={styles.navButton}>&lt;</button>
                         <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
                         <button onClick={nextMonth} className={styles.navButton}>&gt;</button>
+                    </div>
+                    <div className={styles.calendarActions}>
+                        <button type="button" onClick={goToToday} className={styles.todayButton}>Vandaag</button>
                     </div>
                     
                     <div className={styles["grid-container"]}>
