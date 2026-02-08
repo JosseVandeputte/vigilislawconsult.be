@@ -10,10 +10,22 @@ import { useState } from 'react';
 export default function Reservatie() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [formattedDate, setFormattedDate] = useState<string>('');
+    const [startTime, setStartTime] = useState<string>('');
+    const [endTime, setEndTime] = useState<string>('');
 
     const monthNames = [
         'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni',
         'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'
+    ];
+
+    const timeSlots = [
+        '06:00', '06:30', '07:00', '07:30', '08:00', '08:30',
+        '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+        '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+        '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+        '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
+        '21:00', '21:30', '22:00'
     ];
 
     const getDaysInMonth = (date: Date) => {
@@ -103,19 +115,36 @@ export default function Reservatie() {
     };
 
     const goToForm = () => {
-        return null;
+        if(selectedDate === null) {
+            alert('Gelieve een datum te selecteren voordat u verder gaat.');
+            return;
+        }
+
+        setFormattedDate(`${selectedDate.getDate().toString().padStart(2, '0')}/${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}/${selectedDate.getFullYear()}`);
+
+        const calendarContainer = document.getElementById('calendarContainer');
+        const formContainer = document.getElementById('formContainer');
+        if (!calendarContainer || !formContainer) {
+            alert('Er is een fout opgetreden. Probeer het opnieuw.');
+            return;
+        }
+        calendarContainer.style.display = 'none';
+        formContainer.style.display = 'block';
     }
 
     const calendarDays = generateCalendarDays();
+    const endTimeOptions = startTime
+        ? timeSlots.slice(timeSlots.indexOf(startTime) + 1)
+        : timeSlots;
 
     return (
         <div>
             <Header />
             <section className={styles.reservatie}>
                 <h2>Reservatie</h2>
-                <p>Voor het maken van een reservatie of afspraak kan via onderstaande agenda. <em>Zijn er problemen kan u mij contacteren via via email: <Link href="mailto:&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;?subject=Probleem met afspraak te maken via website">&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;.&#98;&#101;</Link></em></p>
+                <p>Voor het maken van een reservatie of afspraak kan u gebruik maken van onderstaande kalender. <em>Zijn er problemen dan kunt u mij contacteren via email: <Link href="mailto:&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;?subject=Probleem met afspraak te maken via website">&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;.&#98;&#101;</Link></em></p>
             
-                <div className={styles.calendarContainer}>
+                <div id='calendarContainer' className={styles.calendarContainer}>
                     <div className={styles.calendarHeader}>
                         <button onClick={previousMonth} className={styles.navButton}>&lt;</button>
                         <h3>{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</h3>
@@ -158,6 +187,56 @@ export default function Reservatie() {
                     <div className={styles.goFormRow}>
                         <button type="button" onClick={goToForm} className={styles.goFormButton}>Volgende</button>
                     </div>
+                </div>
+
+                <div id="formContainer" className={styles.formContainer}>
+                    <form>
+                        <h3>Afspraak maken voor {formattedDate}</h3>
+                        <label htmlFor="name">Naam:</label>
+                        <input type="text" id="name" name="name" required />
+
+                        <label htmlFor="email">Email:</label>
+                        <input type="email" id="email" name="email" required />
+
+                        <label htmlFor="startTime">Gewenst start uur:</label>
+                        <select
+                            id="startTime"
+                            name="startTime"
+                            required
+                            value={startTime}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setStartTime(value);
+                                if (value && endTime && timeSlots.indexOf(endTime) < timeSlots.indexOf(value)) {
+                                    setEndTime('');
+                                }
+                            }}
+                        >
+                            <option value="">Selecteer een gewenst start uur</option>
+                            {timeSlots.map((slot) => (
+                                <option key={slot} value={slot}>{slot}</option>
+                            ))}
+                        </select>
+
+                        <label htmlFor="endTime">Gewenst eind uur:</label>
+                        <select
+                            id="endTime"
+                            name="endTime"
+                            required
+                            value={endTime}
+                            onChange={(e) => setEndTime(e.target.value)}
+                        >
+                            <option value="">Selecteer een gewenst eind uur</option>
+                            {endTimeOptions.map((slot) => (
+                                <option key={slot} value={slot}>{slot}</option>
+                            ))}
+                        </select>
+
+                        <label htmlFor="description">Beschrijving van de afspraak:</label>
+                        <textarea id="description" name="description" rows={6} required></textarea>
+
+                        <button type="submit" className={styles.submitButton}>Afspraak bevestigen</button>
+                    </form>
                 </div>
             </section>
             <Footer />
