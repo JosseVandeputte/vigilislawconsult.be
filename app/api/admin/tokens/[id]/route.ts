@@ -10,8 +10,9 @@ const UpdateSchema = z.object({
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const auth = await requireAdminToken(request);
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: 401 });
@@ -25,7 +26,7 @@ export async function PATCH(
   }
 
   const token = await prisma.token.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       isActive: parsed.data.isActive,
       expiresAt: parsed.data.expiresAt === undefined
@@ -41,13 +42,14 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const auth = await requireAdminToken(request);
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
 
-  await prisma.token.delete({ where: { id: params.id } });
+  await prisma.token.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

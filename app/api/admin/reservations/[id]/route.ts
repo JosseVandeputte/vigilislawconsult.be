@@ -44,3 +44,17 @@ export async function PATCH(
 
   return NextResponse.json({ reservation });
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const auth = await requireAdminToken(request);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: 401 });
+  }
+
+  await prisma.reservation.delete({ where: { id } });
+  return NextResponse.json({ ok: true });
+}

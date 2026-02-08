@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
 
 const StatusQuerySchema = z.object({
-  status: z.enum(['PENDING', 'ACCEPTED', 'REJECTED', 'CANCELED']).optional()
+  status: z.enum(['PENDING', 'ACCEPTED', 'REJECTED', 'CANCELED', 'ALL']).optional()
 });
 
 export async function GET(request: Request) {
@@ -22,7 +22,9 @@ export async function GET(request: Request) {
   }
 
   const reservations = await prisma.reservation.findMany({
-    where: parsed.data.status ? { status: parsed.data.status } : undefined,
+    where: parsed.data.status && parsed.data.status !== 'ALL'
+      ? { status: parsed.data.status }
+      : undefined,
     orderBy: [{ date: 'asc' }, { startTime: 'asc' }]
   });
 

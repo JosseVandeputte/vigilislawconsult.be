@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
 
 const CreateTokenSchema = z.object({
+  name: z.string().min(2),
   expiresAt: z.string().datetime().optional()
 });
 
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
   const value = generateToken();
   const token = await prisma.token.create({
     data: {
+      name: parsed.data.name,
       value,
       isActive: true,
       expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null
