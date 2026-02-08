@@ -4,7 +4,7 @@ import Footer from '../components/footer';
 import Header from '../components/header';
 import styles from './reservatie.module.css';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 export default function Reservatie() {
@@ -13,6 +13,9 @@ export default function Reservatie() {
     const [formattedDate, setFormattedDate] = useState<string>('');
     const [startTime, setStartTime] = useState<string>('');
     const [endTime, setEndTime] = useState<string>('');
+    const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [busySlots, setBusySlots] = useState<Array<{ startTime: string; endTime: string }>>([]);
 
     const monthNames = [
         'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni',
@@ -27,6 +30,21 @@ export default function Reservatie() {
         '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
         '21:00', '21:30', '22:00', '22:30', '23:00'
     ];
+
+    const timeToMinutes = (time: string) => {
+        const [h, m] = time.split(':').map(Number);
+        return h * 60 + m;
+    };
+
+    const isRangeAvailable = (start: string, end: string) => {
+        const startMinutes = timeToMinutes(start);
+        const endMinutes = timeToMinutes(end);
+        return busySlots.every((slot) => {
+            const busyStart = timeToMinutes(slot.startTime);
+            const busyEnd = timeToMinutes(slot.endTime);
+            return endMinutes <= busyStart || startMinutes >= busyEnd;
+        });
+    };
 
     const getDaysInMonth = (date: Date) => {
         const year = date.getFullYear();
@@ -132,9 +150,91 @@ export default function Reservatie() {
         formContainer.style.display = 'block';
     }
 
+    useEffect(() => {
+        const fetchBusySlots = async () => {
+            if (!selectedDate) {
+                setBusySlots([]);
+                return;
+            }
+
+            setStartTime('');
+            setEndTime('');
+
+            const response = await fetch(`/api/reservations?date=${selectedDate.toISOString()}`);
+            if (!response.ok) {
+                setBusySlots([]);
+                return;
+            }
+
+            const data = await response.json();
+            const reservations = data.reservations ?? [];
+            const blockedSlots = data.blockedSlots ?? [];
+            setBusySlots([
+                ...reservations.map((item: any) => ({
+                    startTime: item.startTime,
+                    endTime: item.endTime
+                })),
+                ...blockedSlots.map((item: any) => ({
+                    startTime: item.startTime,
+                    endTime: item.endTime
+                }))
+            ]);
+        };
+
+        fetchBusySlots();
+    }, [selectedDate]);
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setSubmitMessage(null);
+        setSubmitError(null);
+
+        if (!selectedDate) {
+            setSubmitError('Selecteer een datum voordat u het formulier indient.');
+            return;
+        }
+
+        if (!startTime || !endTime) {
+            setSubmitError('Selecteer een start- en einduur.');
+            return;
+        }
+
+        const formData = new FormData(event.currentTarget);
+        const payload = {
+            name: String(formData.get('name') ?? ''),
+            email: String(formData.get('email') ?? ''),
+            description: String(formData.get('description') ?? ''),
+            date: selectedDate.toISOString(),
+            startTime,
+            endTime
+        };
+
+        const response = await fetch('/api/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => null);
+            setSubmitError(data?.error ?? 'Er is iets misgelopen. Probeer opnieuw.');
+            return;
+        }
+
+        event.currentTarget.reset();
+        setStartTime('');
+        setEndTime('');
+        setSubmitMessage('Aanvraag ontvangen. U krijgt bericht na goedkeuring.');
+    };
+
     const calendarDays = generateCalendarDays();
+    const availableStartTimes = timeSlots.filter((slot, index) =>
+        timeSlots.slice(index + 1).some((end) => isRangeAvailable(slot, end))
+    );
     const endTimeOptions = startTime
-        ? timeSlots.slice(timeSlots.indexOf(startTime) + 1)
+        ? timeSlots
+            .slice(timeSlots.indexOf(startTime) + 1)
+            .filter((end) => isRangeAvailable(startTime, end))
         : timeSlots;
 
     return (
@@ -190,7 +290,7 @@ export default function Reservatie() {
                 </div>
 
                 <div id="formContainer" className={styles.formContainer}>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <h3>Afspraak maken voor {formattedDate}</h3>
                         <label htmlFor="name">Naam:</label>
                         <input type="text" id="name" name="name" required />
@@ -207,13 +307,17 @@ export default function Reservatie() {
                             onChange={(e) => {
                                 const value = e.target.value;
                                 setStartTime(value);
-                                if (value && endTime && timeSlots.indexOf(endTime) < timeSlots.indexOf(value)) {
+                                if (!value) {
+                                    setEndTime('');
+                                    return;
+                                }
+                                if (!endTime || !isRangeAvailable(value, endTime)) {
                                     setEndTime('');
                                 }
                             }}
                         >
                             <option value="">Selecteer een gewenst start uur</option>
-                            {timeSlots.map((slot) => (
+                            {availableStartTimes.map((slot) => (
                                 <option key={slot} value={slot}>{slot}</option>
                             ))}
                         </select>
@@ -237,6 +341,9 @@ export default function Reservatie() {
                             Is de tijd die u wilt niet beschrikbaar in bovenstaande lijst? Gelieve dan in het beschrijvingsveld uw gewenste tijdstip te vermelden, en ik zal mijn best doen om hier rekening mee te houden bij het plannen van de afspraak.
                         </em>
                         <textarea id="description" name="description" rows={6} required></textarea>
+
+                        {submitError && <p className={styles.formError}>{submitError}</p>}
+                        {submitMessage && <p className={styles.formMessage}>{submitMessage}</p>}
 
                         <button type="submit" className={styles.submitButton}>Afspraak bevestigen</button>
                     </form>

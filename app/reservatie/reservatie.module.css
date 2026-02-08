@@ -250,6 +250,18 @@
             font-size: 1rem;
             resize: vertical;
         }
+        
+        .formError {
+            margin: 0 0 1rem;
+            color: #b42318;
+            font-weight: 600;
+        }
+        
+        .formMessage {
+            margin: 0 0 1rem;
+            color: var(--blue);
+            font-weight: 600;
+        }
 
         .submitButton {
             background-color: var(--brown);
