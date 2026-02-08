@@ -22,6 +22,7 @@ export const sendMail = async (params: {
   to: string;
   subject: string;
   text: string;
+  html?: string;
 }) => {
   const transporter = getTransporter();
   const from = process.env.MAIL_FROM;
@@ -34,7 +35,8 @@ export const sendMail = async (params: {
     from,
     to: params.to,
     subject: params.subject,
-    text: params.text
+    text: params.text,
+    html: params.html
   });
 
   return { ok: true as const };
