@@ -156,12 +156,42 @@ export async function POST(request: Request) {
     }
   });
 
+  const formatDate = dateOnly.toLocaleDateString('nl-BE');
+  const customerText = `Beste ${name},\n\nWe hebben uw aanvraag voor een afspraak bij ons goed ontvangen.\n\nDatum: ${formatDate}\nTijd: ${startTime} - ${endTime}\n\nU krijgt bericht zodra de aanvraag is goedgekeurd of geweigerd.\n\nMet vriendelijke groeten,\nVigilis Law Consult`;
+  const customerHtml = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1e2d40;">
+      <p>Beste ${name},</p>
+      <p>We hebben uw aanvraag voor een afspraak bij ons goed ontvangen.</p>
+      <p><strong>Datum:</strong> ${formatDate}<br />
+      <strong>Tijd:</strong> ${startTime} - ${endTime}</p>
+      <p>U krijgt bericht zodra de aanvraag is goedgekeurd of geweigerd.</p>
+      <p>Met vriendelijke groeten,<br />Vigilis Law Consult</p>
+    </div>
+  `;
+
+  await sendMail({
+    to: email,
+    subject: 'Bevestiging van uw reservatie-aanvraag',
+    text: customerText,
+    html: customerHtml
+  });
+
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
   if (adminEmail) {
+    const adminText = `Nieuwe reservatie van ${name} (met email: ${email}).\n\nDatum: ${formatDate}\nTijd: ${startTime} - ${endTime}\n\nBeschrijving:\n${description}`;
+    const adminHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1e2d40;">
+        <p>Nieuwe reservatie van <strong>${name}</strong> (met email: ${email}).</p>
+        <p><strong>Datum:</strong> ${formatDate}<br />
+        <strong>Tijd:</strong> ${startTime} - ${endTime}</p>
+        <p><strong>Beschrijving:</strong><br />${description}</p>
+      </div>
+    `;
     await sendMail({
       to: adminEmail,
       subject: 'Nieuwe reservatie aanvraag',
-      text: `Nieuwe reservatie van ${name} (${email}).\nDatum: ${dateOnly.toLocaleDateString('nl-BE')}\nTijd: ${startTime} - ${endTime}\n\nBeschrijving:\n${description}`
+      text: adminText,
+      html: adminHtml
     });
   }
 

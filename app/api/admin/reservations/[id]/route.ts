@@ -36,10 +36,21 @@ export async function PATCH(
     CANCELED: 'geannuleerd'
   };
 
+  const formattedDate = reservation.date.toLocaleDateString('nl-BE');
+  const userText = `Beste ${reservation.name},\n\nUw reservatie bij ons op ${formattedDate} van ${reservation.startTime} tot ${reservation.endTime} is ${statusMap[reservation.status]}.\n\nMet vriendelijke groeten,\nVigilis Law Consult`;
+  const userHtml = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1e2d40;">
+      <p>Beste ${reservation.name},</p>
+      <p>Uw reservatie bij ons op <strong>${formattedDate}</strong> van <strong>${reservation.startTime}</strong> tot <strong>${reservation.endTime}</strong> is ${statusMap[reservation.status]}.</p>
+      <p>Met vriendelijke groeten,<br />Vigilis Law Consult</p>
+    </div>
+  `;
+
   await sendMail({
     to: reservation.email,
     subject: 'Update over uw reservatie',
-    text: `Beste ${reservation.name},\n\nUw reservatie op ${reservation.date.toLocaleDateString('nl-BE')} van ${reservation.startTime} tot ${reservation.endTime} is ${statusMap[reservation.status]}.\n\nMet vriendelijke groet,\nVigilis Law Consult`
+    text: userText,
+    html: userHtml
   });
 
   return NextResponse.json({ reservation });
