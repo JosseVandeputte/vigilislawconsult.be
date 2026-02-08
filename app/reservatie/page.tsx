@@ -81,12 +81,30 @@ export default function Reservatie() {
                currentDate.getFullYear() === today.getFullYear();
     };
 
+    const isPastOrToday = (day: number) => {
+        const today = new Date();
+        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const compareDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        return compareDate.getTime() <= todayStart.getTime();
+    };
+
+    const isPastDay = (day: number) => {
+        const today = new Date();
+        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const compareDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        return compareDate.getTime() < todayStart.getTime();
+    };
+
     const isSelected = (day: number) => {
         if (!selectedDate) return false;
         return day === selectedDate.getDate() &&
                currentDate.getMonth() === selectedDate.getMonth() &&
                currentDate.getFullYear() === selectedDate.getFullYear();
     };
+
+    const goToForm = () => {
+        return null;
+    }
 
     const calendarDays = generateCalendarDays();
 
@@ -127,16 +145,20 @@ export default function Reservatie() {
                                         day && isToday(day) ? styles.today : ''
                                     } ${
                                         day && isSelected(day) ? styles.selected : ''
+                                    } ${
+                                        day && isPastDay(day) ? styles.disabledDay : ''
                                     }`}
-                                    onClick={() => day && handleDateClick(day)}
+                                    onClick={() => day && !isPastOrToday(day) && handleDateClick(day)}
                                 >
                                     {day}
                                 </div>
                             ))}
                         </div>
                     </div>
+                    <div className={styles.goFormRow}>
+                        <button type="button" onClick={goToForm} className={styles.goFormButton}>Volgende</button>
+                    </div>
                 </div>
-            
             </section>
             <Footer />
         </div>
