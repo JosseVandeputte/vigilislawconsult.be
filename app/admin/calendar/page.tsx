@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
@@ -56,7 +56,7 @@ export default function AdminCalendarPage() {
   const [message, setMessage] = useState<string | null>(null);
   const calendarRef = useRef<FullCalendar | null>(null);
 
-  const fetchReservations = async () => {
+  const fetchReservations = useCallback(async () => {
     if (!adminToken) return;
     const response = await fetch('/api/admin/reservations?status=ALL', {
       headers: { 'x-admin-token': adminToken }
@@ -70,9 +70,9 @@ export default function AdminCalendarPage() {
 
     const data = await response.json();
     setReservations(data.reservations ?? []);
-  };
+  }, [adminToken]);
 
-  const fetchBlockedSlots = async () => {
+  const fetchBlockedSlots = useCallback(async () => {
     if (!adminToken) return;
     const response = await fetch('/api/admin/blocked-slots', {
       headers: { 'x-admin-token': adminToken }
@@ -84,13 +84,13 @@ export default function AdminCalendarPage() {
 
     const data = await response.json();
     setBlockedSlots(data.slots ?? []);
-  };
+  }, [adminToken]);
 
   useEffect(() => {
     if (!ready || !adminToken) return;
     fetchReservations();
     fetchBlockedSlots();
-  }, [ready, adminToken]);
+  }, [ready, adminToken, fetchReservations, fetchBlockedSlots]);
 
   const updateReservationStatus = async (id: string, status: Reservation['status']) => {
     setError(null);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
@@ -44,7 +44,7 @@ export default function AdminBlockedSlotsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSlots = async () => {
+  const fetchSlots = useCallback(async () => {
     if (!adminToken) return;
     const response = await fetch('/api/admin/blocked-slots', {
       headers: { 'x-admin-token': adminToken }
@@ -58,12 +58,12 @@ export default function AdminBlockedSlotsPage() {
 
     const data = await response.json();
     setSlots(data.slots ?? []);
-  };
+  }, [adminToken]);
 
   useEffect(() => {
     if (!ready || !adminToken) return;
     fetchSlots();
-  }, [ready, adminToken]);
+  }, [ready, adminToken, fetchSlots]);
 
   const createSlot = async () => {
     setMessage(null);

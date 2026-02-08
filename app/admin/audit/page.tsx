@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
@@ -40,7 +40,7 @@ export default function AdminAuditPage() {
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     if (!adminToken) return;
     const response = await fetch('/api/admin/audit', {
       headers: { 'x-admin-token': adminToken }
@@ -54,12 +54,12 @@ export default function AdminAuditPage() {
 
     const data = await response.json();
     setLogs(data.logs ?? []);
-  };
+  }, [adminToken]);
 
   useEffect(() => {
     if (!ready || !adminToken) return;
     fetchLogs();
-  }, [ready, adminToken]);
+  }, [ready, adminToken, fetchLogs]);
 
   return (
     <div>

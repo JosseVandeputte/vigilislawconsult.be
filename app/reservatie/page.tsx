@@ -37,6 +37,9 @@ export default function Reservatie() {
         return h * 60 + m;
     };
 
+    type SlotRange = { startTime: string; endTime: string };
+    type BlockedSlot = SlotRange & { date: string };
+
     const dateKey = (date: Date) =>
         `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
@@ -179,14 +182,14 @@ export default function Reservatie() {
             }
 
             const data = await response.json();
-            const reservations = data.reservations ?? [];
-            const blockedSlots = data.blockedSlots ?? [];
+            const reservations: SlotRange[] = data.reservations ?? [];
+            const blockedSlots: SlotRange[] = data.blockedSlots ?? [];
             setBusySlots([
-                ...reservations.map((item: any) => ({
+                ...reservations.map((item) => ({
                     startTime: item.startTime,
                     endTime: item.endTime
                 })),
-                ...blockedSlots.map((item: any) => ({
+                ...blockedSlots.map((item) => ({
                     startTime: item.startTime,
                     endTime: item.endTime
                 }))
@@ -205,9 +208,9 @@ export default function Reservatie() {
                 return;
             }
             const data = await response.json();
-            const slots = data.blockedSlots ?? [];
+            const slots: BlockedSlot[] = data.blockedSlots ?? [];
             const fullDayKeys = new Set<string>();
-            slots.forEach((slot: any) => {
+            slots.forEach((slot) => {
                 const startMinutes = timeToMinutes(slot.startTime);
                 const endMinutes = timeToMinutes(slot.endTime);
                 if (startMinutes <= 0 && endMinutes >= 23 * 60 + 59) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
@@ -31,7 +31,7 @@ export default function AdminTokensPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTokens = async () => {
+  const fetchTokens = useCallback(async () => {
     if (!adminToken) return;
     const response = await fetch('/api/admin/tokens', {
       headers: { 'x-admin-token': adminToken }
@@ -45,12 +45,12 @@ export default function AdminTokensPage() {
 
     const data = await response.json();
     setTokens(data.tokens ?? []);
-  };
+  }, [adminToken]);
 
   useEffect(() => {
     if (!ready || !adminToken) return;
     fetchTokens();
-  }, [ready, adminToken]);
+  }, [ready, adminToken, fetchTokens]);
 
   const createToken = async () => {
     if (!tokenName.trim()) {

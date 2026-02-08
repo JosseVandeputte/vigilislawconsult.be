@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
@@ -33,7 +33,7 @@ export default function AdminReservationsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchReservations = async () => {
+  const fetchReservations = useCallback(async () => {
     if (!adminToken) return;
     setLoading(true);
     setError(null);
@@ -51,12 +51,12 @@ export default function AdminReservationsPage() {
 
     const data = await response.json();
     setReservations(data.reservations ?? []);
-  };
+  }, [adminToken, statusFilter]);
 
   useEffect(() => {
     if (!ready || !adminToken) return;
     fetchReservations();
-  }, [ready, adminToken, statusFilter]);
+  }, [ready, adminToken, fetchReservations]);
 
   const updateReservationStatus = async (id: string, status: Reservation['status']) => {
     setMessage(null);
@@ -118,7 +118,10 @@ export default function AdminReservationsPage() {
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <h3>Reservaties</h3>
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)}>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as 'ALL' | Reservation['status'])}
+            >
               <option value="PENDING">In afwachting</option>
               <option value="ACCEPTED">Goedgekeurd</option>
               <option value="REJECTED">Geweigerd</option>
