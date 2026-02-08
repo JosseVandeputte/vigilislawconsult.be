@@ -29,6 +29,7 @@ model Reservation {
 
 model Token {
   id        String   @id @default(cuid())
+  name      String   @default("Onbekend")
   value     String   @unique
   isActive  Boolean  @default(true)
   expiresAt DateTime?
