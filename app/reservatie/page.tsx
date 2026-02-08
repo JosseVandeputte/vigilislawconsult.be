@@ -16,6 +16,7 @@ export default function Reservatie() {
     const [submitMessage, setSubmitMessage] = useState<string | null>(null);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [busySlots, setBusySlots] = useState<Array<{ startTime: string; endTime: string }>>([]);
+    const [blockedDays, setBlockedDays] = useState<Set<string>>(new Set());
 
     const monthNames = [
         'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni',
@@ -34,6 +35,14 @@ export default function Reservatie() {
     const timeToMinutes = (time: string) => {
         const [h, m] = time.split(':').map(Number);
         return h * 60 + m;
+    };
+
+    const dateKey = (date: Date) =>
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const isFullyBlockedDay = (day: number) => {
+        const key = dateKey(new Date(currentDate.getFullYear(), currentDate.getMonth(), day));
+        return blockedDays.has(key);
     };
 
     const isRangeAvailable = (start: string, end: string) => {
@@ -100,6 +109,9 @@ export default function Reservatie() {
     };
 
     const handleDateClick = (day: number) => {
+        if (isFullyBlockedDay(day)) {
+            return;
+        }
         const selected = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
         setSelectedDate(selected);
     };
@@ -184,6 +196,31 @@ export default function Reservatie() {
         fetchBusySlots();
     }, [selectedDate]);
 
+    useEffect(() => {
+        const fetchBlockedDays = async () => {
+            const month = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+            const response = await fetch(`/api/reservations?month=${month}`);
+            if (!response.ok) {
+                setBlockedDays(new Set());
+                return;
+            }
+            const data = await response.json();
+            const slots = data.blockedSlots ?? [];
+            const fullDayKeys = new Set<string>();
+            slots.forEach((slot: any) => {
+                const startMinutes = timeToMinutes(slot.startTime);
+                const endMinutes = timeToMinutes(slot.endTime);
+                if (startMinutes <= 0 && endMinutes >= 23 * 60 + 59) {
+                    const dateObj = new Date(slot.date);
+                    fullDayKeys.add(dateKey(dateObj));
+                }
+            });
+            setBlockedDays(fullDayKeys);
+        };
+
+        fetchBlockedDays();
+    }, [currentDate]);
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setSubmitMessage(null);
@@ -228,14 +265,19 @@ export default function Reservatie() {
     };
 
     const calendarDays = generateCalendarDays();
-    const availableStartTimes = timeSlots.filter((slot, index) =>
-        timeSlots.slice(index + 1).some((end) => isRangeAvailable(slot, end))
-    );
-    const endTimeOptions = startTime
-        ? timeSlots
-            .slice(timeSlots.indexOf(startTime) + 1)
-            .filter((end) => isRangeAvailable(startTime, end))
-        : timeSlots;
+    const selectedBlocked = selectedDate ? blockedDays.has(dateKey(selectedDate)) : false;
+    const availableStartTimes = selectedBlocked
+        ? []
+        : timeSlots.filter((slot, index) =>
+            timeSlots.slice(index + 1).some((end) => isRangeAvailable(slot, end))
+        );
+    const endTimeOptions = selectedBlocked
+        ? []
+        : startTime
+            ? timeSlots
+                .slice(timeSlots.indexOf(startTime) + 1)
+                .filter((end) => isRangeAvailable(startTime, end))
+            : timeSlots;
 
     return (
         <div>
@@ -276,8 +318,10 @@ export default function Reservatie() {
                                         day && isSelected(day) ? styles.selected : ''
                                     } ${
                                         day && isPastDay(day) ? styles.disabledDay : ''
+                                    } ${
+                                        day && isFullyBlockedDay(day) ? styles.fullyBlockedDay : ''
                                     }`}
-                                    onClick={() => day && !isPastOrToday(day) && handleDateClick(day)}
+                                    onClick={() => day && !isPastOrToday(day) && !isFullyBlockedDay(day) && handleDateClick(day)}
                                 >
                                     {day}
                                 </div>

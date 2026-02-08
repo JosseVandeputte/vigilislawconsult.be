@@ -189,6 +189,14 @@
                     opacity: 0.85;
                     pointer-events: none;
                 }
+
+                &.fullyBlockedDay {
+                    cursor: not-allowed;
+                    color: #7a7a7a;
+                    background-color: #e5e5e5;
+                    opacity: 0.9;
+                    pointer-events: none;
+                }
             }
         }
 
