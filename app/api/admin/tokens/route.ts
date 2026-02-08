@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
+import { logAudit } from '@/lib/audit';
 
 const CreateTokenSchema = z.object({
   name: z.string().min(2),
@@ -46,6 +47,18 @@ export async function POST(request: Request) {
       value,
       isActive: true,
       expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null
+    }
+  });
+
+  await logAudit({
+    action: 'token.create',
+    entityType: 'token',
+    entityId: token.id,
+    message: `Token aangemaakt (${token.name})`,
+    data: {
+      name: token.name,
+      value: token.value,
+      expiresAt: token.expiresAt
     }
   });
 

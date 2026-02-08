@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
 import { sendMail } from '@/lib/mailer';
+import { logAudit } from '@/lib/audit';
 
 const StatusSchema = z.object({
   status: z.enum(['ACCEPTED', 'REJECTED', 'CANCELED'])
@@ -53,6 +54,22 @@ export async function PATCH(
     html: userHtml
   });
 
+  await logAudit({
+    action: 'reservation.status.update',
+    entityType: 'reservation',
+    entityId: reservation.id,
+    message: `Status gewijzigd naar ${reservation.status} voor ${reservation.email}`,
+    data: {
+      name: reservation.name,
+      email: reservation.email,
+      date: reservation.date,
+      startTime: reservation.startTime,
+      endTime: reservation.endTime,
+      description: reservation.description,
+      status: reservation.status
+    }
+  });
+
   return NextResponse.json({ reservation });
 }
 
@@ -66,6 +83,24 @@ export async function DELETE(
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
 
+  const existing = await prisma.reservation.findUnique({ where: { id } });
   await prisma.reservation.delete({ where: { id } });
+  await logAudit({
+    action: 'reservation.delete',
+    entityType: 'reservation',
+    entityId: id,
+    message: 'Reservatie verwijderd',
+    data: existing
+      ? {
+          name: existing.name,
+          email: existing.email,
+          date: existing.date,
+          startTime: existing.startTime,
+          endTime: existing.endTime,
+          description: existing.description,
+          status: existing.status
+        }
+      : undefined
+  });
   return NextResponse.json({ ok: true });
 }

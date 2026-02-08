@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
+import { logAudit } from '@/lib/audit';
 
 const UpdateSchema = z.object({
   isActive: z.boolean().optional(),
@@ -37,6 +38,19 @@ export async function PATCH(
     }
   });
 
+  await logAudit({
+    action: 'token.update',
+    entityType: 'token',
+    entityId: token.id,
+    message: `Token bijgewerkt (${token.name})`,
+    data: {
+      name: token.name,
+      value: token.value,
+      isActive: token.isActive,
+      expiresAt: token.expiresAt
+    }
+  });
+
   return NextResponse.json({ token });
 }
 
@@ -50,6 +64,17 @@ export async function DELETE(
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
 
-  await prisma.token.delete({ where: { id } });
+  const deleted = await prisma.token.delete({ where: { id } });
+  await logAudit({
+    action: 'token.delete',
+    entityType: 'token',
+    entityId: id,
+    message: `Token verwijderd (${deleted.name})`,
+    data: {
+      name: deleted.name,
+      value: deleted.value,
+      expiresAt: deleted.expiresAt
+    }
+  });
   return NextResponse.json({ ok: true });
 }
