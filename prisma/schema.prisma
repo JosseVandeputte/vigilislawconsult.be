@@ -44,3 +44,13 @@ model BlockedSlot {
   reason    String?
   createdAt DateTime @default(now())
 }
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String
+  message    String
+  data       Json?
+  createdAt  DateTime @default(now())
+}
