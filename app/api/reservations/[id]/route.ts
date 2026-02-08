@@ -8,8 +8,9 @@ const StatusSchema = z.object({
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const body = await request.json().catch(() => null);
   const parsed = StatusSchema.safeParse(body);
 
@@ -18,7 +19,7 @@ export async function PATCH(
   }
 
   const reservation = await prisma.reservation.update({
-    where: { id: params.id },
+    where: { id },
     data: { status: parsed.data.status }
   });
 
@@ -27,8 +28,9 @@ export async function PATCH(
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  await prisma.reservation.delete({ where: { id: params.id } });
+  const { id } = await params;
+  await prisma.reservation.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
