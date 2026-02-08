@@ -28,6 +28,34 @@ const normalizeDate = (value: string) => {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const dateParam = searchParams.get('date');
+  const monthParam = searchParams.get('month');
+
+  if (monthParam) {
+    const match = /^(\d{4})-(\d{2})$/.exec(monthParam);
+    if (!match) {
+      return NextResponse.json({ error: 'Ongeldige maand.' }, { status: 400 });
+    }
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    if (!year || month < 1 || month > 12) {
+      return NextResponse.json({ error: 'Ongeldige maand.' }, { status: 400 });
+    }
+
+    const monthStart = new Date(year, month - 1, 1, 0, 0, 0, 0);
+    const monthEnd = new Date(year, month, 0, 23, 59, 59, 999);
+
+    const blockedSlots = await prisma.blockedSlot.findMany({
+      where: {
+        date: {
+          gte: monthStart,
+          lte: monthEnd
+        }
+      },
+      orderBy: [{ date: 'asc' }, { startTime: 'asc' }]
+    });
+
+    return NextResponse.json({ blockedSlots });
+  }
 
   if (dateParam) {
     const dateOnly = normalizeDate(dateParam);
