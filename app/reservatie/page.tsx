@@ -233,6 +233,9 @@ export default function Reservatie() {
                         </select>
 
                         <label htmlFor="description">Beschrijving van de afspraak:</label>
+                        <em>
+                            Is de tijd die u wilt niet beschrikbaar in bovenstaande lijst? Gelieve dan in het beschrijvingsveld uw gewenste tijdstip te vermelden, en ik zal mijn best doen om hier rekening mee te houden bij het plannen van de afspraak.
+                        </em>
                         <textarea id="description" name="description" rows={6} required></textarea>
 
                         <button type="submit" className={styles.submitButton}>Afspraak bevestigen</button>
