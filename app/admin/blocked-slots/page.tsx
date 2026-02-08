@@ -22,7 +22,7 @@ type BlockedSlot = {
 };
 
 export default function AdminBlockedSlotsPage() {
-  const { adminToken, setAdminToken, ready } = useAdminToken();
+  const { adminToken, ready } = useAdminToken();
   useRequireAdmin();
   const [slots, setSlots] = useState<BlockedSlot[]>([]);
   const [date, setDate] = useState('');

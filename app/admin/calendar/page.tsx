@@ -45,7 +45,7 @@ const statusColors: Record<Reservation['status'], string> = {
 };
 
 export default function AdminCalendarPage() {
-  const { adminToken, setAdminToken, ready } = useAdminToken();
+  const { adminToken, ready } = useAdminToken();
   useRequireAdmin();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>([]);

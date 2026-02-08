@@ -34,7 +34,7 @@ type AuditLog = {
 };
 
 export default function AdminAuditPage() {
-  const { adminToken, setAdminToken, ready } = useAdminToken();
+  const { adminToken, ready } = useAdminToken();
   useRequireAdmin();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [error, setError] = useState<string | null>(null);

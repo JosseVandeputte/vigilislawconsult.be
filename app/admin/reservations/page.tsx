@@ -25,7 +25,7 @@ type Reservation = {
 };
 
 export default function AdminReservationsPage() {
-  const { adminToken, setAdminToken, ready } = useAdminToken();
+  const { adminToken, ready } = useAdminToken();
   useRequireAdmin();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [statusFilter, setStatusFilter] = useState<'ALL' | Reservation['status']>('PENDING');

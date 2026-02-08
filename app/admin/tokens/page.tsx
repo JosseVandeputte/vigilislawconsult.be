@@ -23,7 +23,7 @@ type Token = {
 };
 
 export default function AdminTokensPage() {
-  const { adminToken, setAdminToken, ready } = useAdminToken();
+  const { adminToken, ready } = useAdminToken();
   useRequireAdmin();
   const [tokens, setTokens] = useState<Token[]>([]);
   const [tokenExpiresAt, setTokenExpiresAt] = useState('');
