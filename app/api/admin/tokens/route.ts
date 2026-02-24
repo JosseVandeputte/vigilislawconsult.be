@@ -6,6 +6,7 @@ import { logAudit } from '@/lib/audit';
 
 const CreateTokenSchema = z.object({
   name: z.string().min(2),
+  email: z.string().email(),
   expiresAt: z.string().datetime().optional()
 });
 
@@ -44,6 +45,7 @@ export async function POST(request: Request) {
   const token = await prisma.token.create({
     data: {
       name: parsed.data.name,
+      email: parsed.data.email.toLowerCase(),
       value,
       isActive: true,
       expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null
@@ -57,6 +59,7 @@ export async function POST(request: Request) {
     message: `Token aangemaakt (${token.name})`,
     data: {
       name: token.name,
+      email: token.email,
       value: token.value,
       expiresAt: token.expiresAt
     }
