@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from '../admin.module.css';
 import { useAdminToken, useRequireAdmin } from '../admin-utils';
 
@@ -36,6 +36,14 @@ export default function AdminAuditPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
+  const totalPages = Math.max(1, Math.ceil(logs.length / pageSize));
+  const visibleLogs = useMemo(
+    () => logs.slice((page - 1) * pageSize, page * pageSize),
+    [logs, page, pageSize]
+  );
 
   const fetchLogs = useCallback(async () => {
     if (!adminToken) return;
@@ -65,10 +73,26 @@ export default function AdminAuditPage() {
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.card}>
-          <h3>Laatste wijzigingen</h3>
+          <div className={styles.cardHeader}>
+            <h3>Laatste wijzigingen</h3>
+            <div className={styles.pageSizePicker}>
+              <span>Toon</span>
+              {[10, 20, 50, 100].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={`${styles.pageSizeBtn}${pageSize === n ? ` ${styles.pageSizeBtnActive}` : ''}`}
+                  onClick={() => { setPageSize(n); setPage(1); setExpandedId(null); }}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className={styles.list}>
             {logs.length === 0 && <p>Geen activiteiten gevonden.</p>}
-            {logs.map((log) => {
+            {visibleLogs.map((log) => {
               const formattedDate = log.data?.date
                 ? formatDateTime(log.data.date)
                 : formatDateTime(log.createdAt);
@@ -107,6 +131,40 @@ export default function AdminAuditPage() {
               );
             })}
           </div>
+
+          {totalPages > 1 && (
+            <div className={styles.pagination}>
+              <button
+                type="button"
+                className={styles.pageBtn}
+                disabled={page === 1}
+                onClick={() => { setPage(page - 1); setExpandedId(null); }}
+              >
+                ‹
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  className={`${styles.pageBtn}${p === page ? ` ${styles.pageBtnActive}` : ''}`}
+                  onClick={() => { setPage(p); setExpandedId(null); }}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                type="button"
+                className={styles.pageBtn}
+                disabled={page === totalPages}
+                onClick={() => { setPage(page + 1); setExpandedId(null); }}
+              >
+                ›
+              </button>
+              <span className={styles.pageInfo}>
+                {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, logs.length)} van {logs.length}
+              </span>
+            </div>
+          )}
         </div>
     </section>
   );
