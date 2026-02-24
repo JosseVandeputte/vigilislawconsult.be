@@ -281,60 +281,100 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s ease;
+            align-self: flex-start;
 
             &:hover {
                 background-color: var(--blue);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
             }
         }
     }
 
     .gateContainer {
-        max-width: 420px;
-        margin: 2rem auto 0;
+        max-width: 480px;
+        margin: 2rem auto;
+        background-color: var(--pure-white);
+        border: 1px solid var(--brown);
+        padding: 2rem;
+        border-radius: 8px;
         text-align: center;
+
+        h3 {
+            color: var(--blue);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
 
         > p {
             font-size: 1rem;
+            line-height: 1.6;
             margin-bottom: 1.5rem;
             color: var(--blue);
-            opacity: 0.8;
         }
     }
 
     .gateForm {
         display: flex;
         flex-direction: column;
-        gap: 0.6rem;
         text-align: left;
 
         label {
-            font-size: 0.9rem;
-            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
             color: var(--blue);
         }
 
         input {
-            padding: 0.65rem 0.875rem;
-            border-radius: 8px;
-            border: 1px solid rgba(30, 45, 64, 0.2);
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             font-size: 1rem;
             font-family: inherit;
+            background: white;
             color: var(--blue);
-            background: var(--white);
-            transition: border-color 0.15s, box-shadow 0.15s;
+            box-sizing: border-box;
 
             &:focus {
                 outline: none;
                 border-color: var(--brown);
-                box-shadow: 0 0 0 3px rgba(207, 161, 119, 0.2);
             }
         }
 
         .gateError {
+            margin: -1rem 0 1rem;
             color: #b42318;
             font-weight: 600;
             font-size: 0.9rem;
-            margin: 0.25rem 0 0;
+        }
+
+        .gateButton {
+            background-color: var(--brown);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            align-self: flex-start;
+
+            &:hover {
+                background-color: var(--blue);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
         }
     }
     

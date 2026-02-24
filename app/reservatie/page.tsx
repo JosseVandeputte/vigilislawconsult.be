@@ -5,35 +5,23 @@ import Header from '../components/header';
 import styles from './reservatie.module.css';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 
 export default function Reservatie() {
-    // ── Token gate ─────────────────────────────────────
-    const [gateStatus, setGateStatus] = useState<'waiting' | 'validating' | 'passed'>('waiting');
-    const [gateEmail, setGateEmail] = useState('');
-    const [gateToken, setGateToken] = useState('');
-    const [gateError, setGateError] = useState<string | null>(null);
+    const router = useRouter();
+    const [sessionEmail, setSessionEmail] = useState<string | null>(null);
+    const [sessionChecked, setSessionChecked] = useState(false);
 
-    const handleGate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setGateError(null);
-        setGateStatus('validating');
-
-        const response = await fetch('/api/reservations/validate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: gateEmail.trim(), token: gateToken.trim() })
-        });
-
-        if (!response.ok) {
-            const data = await response.json().catch(() => null);
-            setGateError(data?.error ?? 'Ongeldig e-mailadres of token.');
-            setGateStatus('waiting');
-            return;
+    useEffect(() => {
+        const email = sessionStorage.getItem('reservatie_email');
+        if (!email) {
+            router.replace('/reservatie/login');
+        } else {
+            setSessionEmail(email);
+            setSessionChecked(true);
         }
-
-        setGateStatus('passed');
-    };
+    }, [router]);
 
     // ── Reservation state ──────────────────────────────
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -310,48 +298,13 @@ export default function Reservatie() {
                 .filter((end) => isRangeAvailable(startTime, end))
             : timeSlots;
 
+    if (!sessionChecked) return null;
+
     return (
         <div>
             <Header />
             <section className={styles.reservatie}>
                 <h2>Reservatie</h2>
-
-                {gateStatus !== 'passed' ? (
-                    <div className={styles.gateContainer}>
-                        <p>Vul uw e-mailadres en toegangscode in om de reservatiepagina te openen.</p>
-                        <form onSubmit={handleGate} className={styles.gateForm}>
-                            <label htmlFor="gate-email">E-mailadres</label>
-                            <input
-                                id="gate-email"
-                                type="email"
-                                placeholder="uw@email.com"
-                                value={gateEmail}
-                                onChange={(e) => setGateEmail(e.target.value)}
-                                required
-                                autoComplete="email"
-                            />
-                            <label htmlFor="gate-token">Toegangscode</label>
-                            <input
-                                id="gate-token"
-                                type="text"
-                                placeholder="Uw persoonlijke toegangscode"
-                                value={gateToken}
-                                onChange={(e) => setGateToken(e.target.value)}
-                                required
-                                autoComplete="off"
-                            />
-                            {gateError && <p className={styles.gateError}>{gateError}</p>}
-                            <button
-                                type="submit"
-                                className={styles.submitButton}
-                                disabled={gateStatus === 'validating'}
-                            >
-                                {gateStatus === 'validating' ? 'Bezig...' : 'Toegang'}
-                            </button>
-                        </form>
-                    </div>
-                ) : (
-                    <>
                 <p>Voor het maken van een reservatie of afspraak kan u gebruik maken van onderstaande kalender. <em>Zijn er problemen dan kunt u mij contacteren via email: <Link href="mailto:&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;?subject=Probleem met afspraak te maken via website">&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;.&#98;&#101;</Link></em></p>
             
                 <div id='calendarContainer' className={styles.calendarContainer}>
@@ -408,7 +361,7 @@ export default function Reservatie() {
                         <input type="text" id="name" name="name" required />
 
                         <label htmlFor="email">Email:</label>
-                        <input type="email" id="email" name="email" required defaultValue={gateEmail} />
+                        <input type="email" id="email" name="email" required defaultValue={sessionEmail ?? ''} />
 
                         <label htmlFor="startTime">Gewenst start uur:</label>
                         <select
@@ -460,8 +413,6 @@ export default function Reservatie() {
                         <button type="submit" className={styles.submitButton}>Afspraak bevestigen</button>
                     </form>
                 </div>
-                    </>
-                )}
             </section>
             <Footer />
         </div>
