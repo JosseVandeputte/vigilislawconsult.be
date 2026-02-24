@@ -1,9 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
 import styles from '../admin.module.css';
 import { useAdminToken, useRequireAdmin } from '../admin-utils';
 
@@ -48,7 +45,7 @@ export default function AdminAuditPage() {
 
     if (!response.ok) {
       const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan audit logs niet laden.');
+      setError(data?.error ?? 'Kan activiteitslog niet laden.');
       return;
     }
 
@@ -62,44 +59,35 @@ export default function AdminAuditPage() {
   }, [ready, adminToken, fetchLogs]);
 
   return (
-    <div>
-      <Header />
-      <section className={styles.admin}>
-        <h2>Audit log</h2>
-
-        <div className={styles.adminNav}>
-          <Link href="/admin/calendar">Kalender</Link>
-          <Link href="/admin/reservations">Reservaties</Link>
-          <Link href="/admin/tokens">Tokens</Link>
-          <Link href="/admin/blocked-slots">Blocked slots</Link>
-          <Link href="/admin/audit">Audit log</Link>
-        </div>
+    <section className={styles.admin}>
+        <h2>Activiteitslog</h2>
 
         {error && <p className={styles.error}>{error}</p>}
 
         <div className={styles.card}>
           <h3>Laatste wijzigingen</h3>
           <div className={styles.list}>
-            {logs.length === 0 && <p>Geen audit logs gevonden.</p>}
+            {logs.length === 0 && <p>Geen activiteiten gevonden.</p>}
             {logs.map((log) => {
               const formattedDate = log.data?.date
                 ? formatDateTime(log.data.date)
                 : formatDateTime(log.createdAt);
               const labelName = log.data?.name ? ` (${log.data.name})` : '';
               const summary = `${log.action}${labelName} op ${formattedDate}`;
+              const isOpen = expandedId === log.id;
 
               return (
-                <div key={log.id} className={styles.listItem}>
+                <div key={log.id} className={styles.auditListItem}>
                   <button
                     type="button"
                     className={styles.auditToggle}
-                    onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
+                    onClick={() => setExpandedId(isOpen ? null : log.id)}
                   >
                     <strong>{summary}</strong>
-                    <span>{expandedId === log.id ? '▲' : '▼'}</span>
+                    <span className={`${styles.auditArrow}${isOpen ? ` ${styles.auditArrowOpen}` : ''}`}>▼</span>
                   </button>
-                  {expandedId === log.id && (
-                    <div className={styles.auditDetails}>
+                  <div className={`${styles.auditDetails}${isOpen ? ` ${styles.auditDetailsOpen}` : ''}`}>
+                    <div className={styles.auditDetailsInner}>
                       <div>{log.message}</div>
                       <div>{log.entityType} • {log.entityId}</div>
                       {log.data?.name && <div><strong>Naam:</strong> {log.data.name}</div>}
@@ -114,14 +102,12 @@ export default function AdminAuditPage() {
                       {log.data?.expiresAt && <div><strong>Vervalt:</strong> {formatDateTime(log.data.expiresAt)}</div>}
                       <div><strong>Aangemaakt:</strong> {formatDateTime(log.createdAt)}</div>
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
-      </section>
-      <Footer />
-    </div>
+    </section>
   );
 }

@@ -1,9 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
 import styles from '../admin.module.css';
 import { useAdminToken, useRequireAdmin } from '../admin-utils';
 
@@ -104,18 +101,8 @@ export default function AdminTokensPage() {
   };
 
   return (
-    <div>
-      <Header />
-      <section className={styles.admin}>
-        <h2>Tokens beheren</h2>
-
-        <div className={styles.adminNav}>
-          <Link href="/admin/calendar">Kalender</Link>
-          <Link href="/admin/reservations">Reservaties</Link>
-          <Link href="/admin/tokens">Tokens</Link>
-          <Link href="/admin/blocked-slots">Blocked slots</Link>
-          <Link href="/admin/audit">Audit log</Link>
-        </div>
+    <section className={styles.admin}>
+        <h2>Tokens</h2>
 
         {error && <p className={styles.error}>{error}</p>}
         {message && <p className={styles.message}>{message}</p>}
@@ -123,19 +110,28 @@ export default function AdminTokensPage() {
         <div className={styles.card}>
           <h3>Nieuwe token</h3>
           <div className={styles.tokenActions}>
-            <input
-              type="text"
-              placeholder="Naam (bv. Klant A)"
-              value={tokenName}
-              onChange={(e) => setTokenName(e.target.value)}
-            />
-            <input
-              type="datetime-local"
-              value={tokenExpiresAt}
-              onChange={(e) => setTokenExpiresAt(e.target.value)}
-            />
+            <div className={styles.formField}>
+              <label htmlFor="token-name" className={styles.formLabel}>Naam van de token</label>
+              <input
+                id="token-name"
+                type="text"
+                placeholder="Bijv. Klant A"
+                value={tokenName}
+                onChange={(e) => setTokenName(e.target.value)}
+              />
+            </div>
+            <div className={styles.formField}>
+              <label htmlFor="token-expires-at" className={styles.formLabel}>Vervaldatum (optioneel)</label>
+              <input
+                id="token-expires-at"
+                type="datetime-local"
+                value={tokenExpiresAt}
+                onChange={(e) => setTokenExpiresAt(e.target.value)}
+              />
+            </div>
             <button type="button" onClick={createToken}>Nieuwe token</button>
           </div>
+          <p className={styles.formHint}>Laat datum leeg als de token niet automatisch mag vervallen.</p>
         </div>
 
         <div className={styles.card}>
@@ -158,8 +154,6 @@ export default function AdminTokensPage() {
             ))}
           </div>
         </div>
-      </section>
-      <Footer />
-    </div>
+    </section>
   );
 }

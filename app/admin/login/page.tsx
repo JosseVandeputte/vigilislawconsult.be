@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
 import styles from '../admin.module.css';
 import { useAdminToken } from '../admin-utils';
 
@@ -24,25 +22,21 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div>
-      <Header />
-      <section className={styles.adminLogin}>
-        <div className={styles.loginCard}>
-          <h2>Admin login</h2>
-          <p>Log in met je admin token om verder te gaan.</p>
-          {error && <p className={styles.error}>{error}</p>}
-          <form onSubmit={handleSubmit}>
-            <input
-              type="password"
-              placeholder="Admin token"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-            />
-            <button type="submit">Inloggen</button>
-          </form>
-        </div>
-      </section>
-      <Footer />
-    </div>
+    <section className={styles.adminLogin}>
+      <div className={styles.loginCard}>
+        <h2>Admin login</h2>
+        <p>Log in met je admin token om verder te gaan.</p>
+        {error && <p className={styles.error}>{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            placeholder="Admin token"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+          />
+          <button type="submit">Inloggen</button>
+        </form>
+      </div>
+    </section>
   );
 }

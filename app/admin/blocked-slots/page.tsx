@@ -1,9 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from '../admin.module.css';
 import { useAdminToken, useRequireAdmin } from '../admin-utils';
 
@@ -44,6 +41,16 @@ export default function AdminBlockedSlotsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const todayStr = new Date().toISOString().split('T')[0];
+  const upcomingSlots = useMemo(
+    () => slots.filter((s) => s.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date)),
+    [slots, todayStr]
+  );
+  const pastSlots = useMemo(
+    () => slots.filter((s) => s.date < todayStr).sort((a, b) => b.date.localeCompare(a.date)),
+    [slots, todayStr]
+  );
+
   const fetchSlots = useCallback(async () => {
     if (!adminToken) return;
     const response = await fetch('/api/admin/blocked-slots', {
@@ -52,7 +59,7 @@ export default function AdminBlockedSlotsPage() {
 
     if (!response.ok) {
       const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan blocked slots niet laden.');
+      setError(data?.error ?? 'Kan geblokkeerde slots niet laden.');
       return;
     }
 
@@ -83,11 +90,11 @@ export default function AdminBlockedSlotsPage() {
 
     if (!response.ok) {
       const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan blocked slot niet aanmaken.');
+      setError(data?.error ?? 'Kan geblokkeerd slot niet aanmaken.');
       return;
     }
 
-    setMessage('Blocked slot toegevoegd.');
+    setMessage('Geblokkeerd slot toegevoegd.');
     setDate('');
     setStartTime('');
     setEndTime('');
@@ -106,110 +113,146 @@ export default function AdminBlockedSlotsPage() {
 
     if (!response.ok) {
       const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan blocked slot niet verwijderen.');
+      setError(data?.error ?? 'Kan geblokkeerd slot niet verwijderen.');
       return;
     }
 
-    setMessage('Blocked slot verwijderd.');
+    setMessage('Geblokkeerd slot verwijderd.');
     fetchSlots();
   };
 
   return (
-    <div>
-      <Header />
-      <section className={styles.admin}>
-        <h2>Blocked slots</h2>
-
-        <div className={styles.adminNav}>
-          <Link href="/admin/calendar">Kalender</Link>
-          <Link href="/admin/reservations">Reservaties</Link>
-          <Link href="/admin/tokens">Tokens</Link>
-          <Link href="/admin/blocked-slots">Blocked slots</Link>
-          <Link href="/admin/audit">Audit log</Link>
-        </div>
+    <section className={styles.admin}>
+        <h2>Geblokkeerde slots</h2>
 
         {error && <p className={styles.error}>{error}</p>}
         {message && <p className={styles.message}>{message}</p>}
 
         <div className={styles.card}>
-          <h3>Nieuw blocked slot</h3>
+          <h3>Nieuw geblokkeerd slot</h3>
           <div className={styles.tokenActions}>
-            <input
-              type="date"
-              lang="nl-BE"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-            <select
-              value={startTime}
-              disabled={allDay}
-              onChange={(e) => {
-                const value = e.target.value;
-                setStartTime(value);
-                if (!value) {
-                  setEndTime('');
-                  return;
-                }
-                if (endTime && timeSlots.indexOf(endTime) <= timeSlots.indexOf(value)) {
-                  setEndTime('');
-                }
-              }}
-            >
-              <option value="">Starttijd</option>
-              {timeSlots.map((slot) => (
-                <option key={slot} value={slot}>{slot}</option>
-              ))}
-            </select>
-            <select
-              value={endTime}
-              disabled={allDay}
-              onChange={(e) => setEndTime(e.target.value)}
-            >
-              <option value="">Eindtijd</option>
-              {endTimeOptions.map((slot) => (
-                <option key={slot} value={slot}>{slot}</option>
-              ))}
-            </select>
-            <label className={styles.inlineLabel}>
+            <div className={styles.formField}>
+              <label htmlFor="slot-date" className={styles.formLabel}>Datum</label>
               <input
-                type="checkbox"
-                checked={allDay}
-                onChange={(e) => setAllDay(e.target.checked)}
+                id="slot-date"
+                type="date"
+                lang="nl-BE"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
               />
-              Hele dag
-            </label>
-            <input
-              type="text"
-              placeholder="Reden (optioneel)"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-            />
+            </div>
+            <div className={styles.formField}>
+              <label htmlFor="slot-start" className={styles.formLabel}>Starttijd</label>
+              <select
+                id="slot-start"
+                value={startTime}
+                disabled={allDay}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setStartTime(value);
+                  if (!value) {
+                    setEndTime('');
+                    return;
+                  }
+                  if (endTime && timeSlots.indexOf(endTime) <= timeSlots.indexOf(value)) {
+                    setEndTime('');
+                  }
+                }}
+              >
+                <option value="">—</option>
+                {timeSlots.map((slot) => (
+                  <option key={slot} value={slot}>{slot}</option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formField}>
+              <label htmlFor="slot-end" className={styles.formLabel}>Eindtijd</label>
+              <select
+                id="slot-end"
+                value={endTime}
+                disabled={allDay}
+                onChange={(e) => setEndTime(e.target.value)}
+              >
+                <option value="">—</option>
+                {endTimeOptions.map((slot) => (
+                  <option key={slot} value={slot}>{slot}</option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formField}>
+              <span className={styles.formLabel} aria-hidden="true">&nbsp;</span>
+              <label className={styles.inlineLabel}>
+                <input
+                  type="checkbox"
+                  checked={allDay}
+                  onChange={(e) => setAllDay(e.target.checked)}
+                />
+                Hele dag
+              </label>
+            </div>
+            <div className={styles.formField}>
+              <label htmlFor="slot-reason" className={styles.formLabel}>Reden (optioneel)</label>
+              <input
+                id="slot-reason"
+                type="text"
+                placeholder="Optioneel"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </div>
             <button type="button" onClick={createSlot}>Toevoegen</button>
           </div>
         </div>
 
         <div className={styles.card}>
           <h3>Geblokkeerde tijdsloten</h3>
-          <div className={styles.list}>
-            {slots.length === 0 && <p>Geen blocked slots gevonden.</p>}
-            {slots.map((slot) => (
-              <div key={slot.id} className={styles.listItem}>
-                <div>
-                  <strong>{formatDate(slot.date)}</strong>
-                  <div>{slot.startTime} - {slot.endTime}</div>
-                  {slot.reason && <div>Reden: {slot.reason}</div>}
-                </div>
-                <div className={styles.actions}>
-                  <button type="button" className={styles.dangerButton} onClick={() => deleteSlot(slot.id)}>
-                    Verwijder
-                  </button>
-                </div>
+
+          {slots.length === 0 && <p>Geen geblokkeerde slots gevonden.</p>}
+
+          {upcomingSlots.length > 0 && (
+            <>
+              <p className={styles.listSubheading}>Aankomend</p>
+              <div className={styles.list}>
+                {upcomingSlots.map((slot) => (
+                  <div key={slot.id} className={styles.listItem}>
+                    <div>
+                      <strong>{formatDate(slot.date)}</strong>
+                      <div>{slot.startTime} - {slot.endTime}</div>
+                      {slot.reason && <div>Reden: {slot.reason}</div>}
+                    </div>
+                    <div className={styles.actions}>
+                      <button type="button" className={styles.dangerButton} onClick={() => deleteSlot(slot.id)}>
+                        Verwijder
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
+
+          {pastSlots.length > 0 && (
+            <>
+              <p className={styles.listSubheading}>Verleden</p>
+              <div className={styles.list}>
+                {pastSlots.map((slot) => (
+                  <div key={slot.id} className={`${styles.listItem} ${styles.listItemMuted}`}>
+                    <div>
+                      <strong>{formatDate(slot.date)}</strong>
+                      <div>{slot.startTime} - {slot.endTime}</div>
+                      {slot.reason && <div>Reden: {slot.reason}</div>}
+                    </div>
+                    <div className={styles.actions}>
+                      <button type="button" className={styles.dangerButton} onClick={() => deleteSlot(slot.id)}>
+                        Verwijder
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
-      </section>
-      <Footer />
-    </div>
+    </section>
   );
 }

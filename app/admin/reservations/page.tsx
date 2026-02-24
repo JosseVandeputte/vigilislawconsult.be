@@ -1,9 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
 import styles from '../admin.module.css';
 import { useAdminToken, useRequireAdmin } from '../admin-utils';
 
@@ -11,6 +8,13 @@ const formatDate = (value: string) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString('nl-BE');
+};
+
+const statusLabels: Record<string, string> = {
+  PENDING: 'In afwachting',
+  ACCEPTED: 'Goedgekeurd',
+  REJECTED: 'Geweigerd',
+  CANCELED: 'Geannuleerd'
 };
 
 type Reservation = {
@@ -99,18 +103,8 @@ export default function AdminReservationsPage() {
   };
 
   return (
-    <div>
-      <Header />
-      <section className={styles.admin}>
-        <h2>Reservatie overzicht</h2>
-
-        <div className={styles.adminNav}>
-          <Link href="/admin/calendar">Kalender</Link>
-          <Link href="/admin/reservations">Reservaties</Link>
-          <Link href="/admin/tokens">Tokens</Link>
-          <Link href="/admin/blocked-slots">Blocked slots</Link>
-          <Link href="/admin/audit">Audit log</Link>
-        </div>
+    <section className={styles.admin}>
+        <h2>Reservaties</h2>
 
         {error && <p className={styles.error}>{error}</p>}
         {message && <p className={styles.message}>{message}</p>}
@@ -145,7 +139,7 @@ export default function AdminReservationsPage() {
                     <p>{reservation.description}</p>
                   </div>
                   <div className={styles.actions}>
-                    <span className={styles.status}>{reservation.status}</span>
+                    <span className={styles.status}>{statusLabels[reservation.status] ?? reservation.status}</span>
                     <button type="button" onClick={() => updateReservationStatus(reservation.id, 'ACCEPTED')}>Accepteer</button>
                     <button type="button" onClick={() => updateReservationStatus(reservation.id, 'REJECTED')}>Weiger</button>
                     <button type="button" onClick={() => updateReservationStatus(reservation.id, 'CANCELED')}>Annuleer</button>
@@ -156,8 +150,6 @@ export default function AdminReservationsPage() {
             </div>
           )}
         </div>
-      </section>
-      <Footer />
-    </div>
+    </section>
   );
 }

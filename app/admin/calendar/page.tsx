@@ -1,9 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
-import Header from '../../components/header';
-import Footer from '../../components/footer';
 import styles from '../admin.module.css';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -42,6 +39,13 @@ const statusColors: Record<Reservation['status'], string> = {
   ACCEPTED: '#2f9e44',
   REJECTED: '#d9480f',
   CANCELED: '#495057'
+};
+
+const statusLabels: Record<Reservation['status'], string> = {
+  PENDING: 'In afwachting',
+  ACCEPTED: 'Goedgekeurd',
+  REJECTED: 'Geweigerd',
+  CANCELED: 'Geannuleerd'
 };
 
 export default function AdminCalendarPage() {
@@ -178,18 +182,8 @@ export default function AdminCalendarPage() {
   }, [reservations, blockedSlots]);
 
   return (
-    <div>
-      <Header />
-      <section className={styles.admin}>
-        <h2>Admin kalender</h2>
-
-        <div className={styles.adminNav}>
-          <Link href="/admin/calendar">Kalender</Link>
-          <Link href="/admin/reservations">Reservaties</Link>
-          <Link href="/admin/tokens">Tokens</Link>
-          <Link href="/admin/blocked-slots">Blocked slots</Link>
-          <Link href="/admin/audit">Audit log</Link>
-        </div>
+    <section className={styles.admin}>
+        <h2>Kalender</h2>
 
         {error && <p className={styles.error}>{error}</p>}
         {message && <p className={styles.message}>{message}</p>}
@@ -286,7 +280,7 @@ export default function AdminCalendarPage() {
               <p><strong>Datum:</strong> {formatDate(selected.date)}</p>
               <p><strong>Tijd:</strong> {selected.startTime} - {selected.endTime}</p>
               <p><strong>Beschrijving:</strong> {selected.description}</p>
-              <p><strong>Status:</strong> {selected.status}</p>
+              <p><strong>Status:</strong> {statusLabels[selected.status]}</p>
             </div>
             <div className={styles.detailActions}>
               <button type="button" onClick={() => updateReservationStatus(selected.id, 'ACCEPTED')}>Accepteer</button>
@@ -296,8 +290,6 @@ export default function AdminCalendarPage() {
             </div>
           </div>
         )}
-      </section>
-      <Footer />
-    </div>
+    </section>
   );
 }
