@@ -23,6 +23,11 @@ export default function Reservatie() {
         }
     }, [router]);
 
+    const handleLogout = () => {
+        sessionStorage.removeItem('reservatie_email');
+        router.replace('/reservatie/login');
+    };
+
     // ── Reservation state ──────────────────────────────
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -31,6 +36,15 @@ export default function Reservatie() {
     const [endTime, setEndTime] = useState<string>('');
     const [submitMessage, setSubmitMessage] = useState<string | null>(null);
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [showModal, setShowModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const closeModal = () => setShowModal(false);
+    const closeAndLogout = () => {
+        setShowModal(false);
+        sessionStorage.removeItem('reservatie_email');
+        router.replace('/reservatie/login');
+    };
     const [busySlots, setBusySlots] = useState<Array<{ startTime: string; endTime: string }>>([]);
     const [blockedDays, setBlockedDays] = useState<Set<string>>(new Set());
 
@@ -181,6 +195,14 @@ export default function Reservatie() {
         formContainer.style.display = 'block';
     }
 
+    const goToCalendar = () => {
+        const calendarContainer = document.getElementById('calendarContainer');
+        const formContainer = document.getElementById('formContainer');
+        if (!calendarContainer || !formContainer) return;
+        formContainer.style.display = 'none';
+        calendarContainer.style.display = 'block';
+    };
+
     useEffect(() => {
         const fetchBusySlots = async () => {
             if (!selectedDate) {
@@ -242,45 +264,55 @@ export default function Reservatie() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        const form = event.currentTarget;
         setSubmitMessage(null);
         setSubmitError(null);
 
         if (!selectedDate) {
             setSubmitError('Selecteer een datum voordat u het formulier indient.');
+            setShowModal(true);
             return;
         }
 
         if (!startTime || !endTime) {
             setSubmitError('Selecteer een start- en einduur.');
+            setShowModal(true);
             return;
         }
 
-        const formData = new FormData(event.currentTarget);
+        const formData = new FormData(form);
         const payload = {
             name: String(formData.get('name') ?? ''),
-            email: String(formData.get('email') ?? ''),
+            email: sessionEmail ?? '',
             description: String(formData.get('description') ?? ''),
             date: selectedDate.toISOString(),
             startTime,
             endTime
         };
 
-        const response = await fetch('/api/reservations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/api/reservations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-        if (!response.ok) {
-            const data = await response.json().catch(() => null);
-            setSubmitError(data?.error ?? 'Er is iets misgelopen. Probeer opnieuw.');
-            return;
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                setSubmitError(data?.error ?? 'Er is iets misgelopen. Probeer opnieuw.');
+                setShowModal(true);
+                return;
+            }
+
+            form.reset();
+            setStartTime('');
+            setEndTime('');
+            setSubmitMessage('Aanvraag ontvangen. U krijgt bericht na goedkeuring. In uw mail ontvangt u ook een overzicht van uw aanvraag.');
+            setShowModal(true);
+        } finally {
+            setIsSubmitting(false);
         }
-
-        event.currentTarget.reset();
-        setStartTime('');
-        setEndTime('');
-        setSubmitMessage('Aanvraag ontvangen. U krijgt bericht na goedkeuring.');
     };
 
     const calendarDays = generateCalendarDays();
@@ -305,6 +337,10 @@ export default function Reservatie() {
             <Header />
             <section className={styles.reservatie}>
                 <h2>Reservatie</h2>
+                <div className={styles.sessionBar}>
+                    <span>Ingelogd als <strong>{sessionEmail}</strong></span>
+                    <button type="button" onClick={handleLogout} className={styles.logoutButton}>Afmelden</button>
+                </div>
                 <p>Voor het maken van een reservatie of afspraak kan u gebruik maken van onderstaande kalender. <em>Zijn er problemen dan kunt u mij contacteren via email: <Link href="mailto:&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;?subject=Probleem met afspraak te maken via website">&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;.&#98;&#101;</Link></em></p>
             
                 <div id='calendarContainer' className={styles.calendarContainer}>
@@ -355,13 +391,16 @@ export default function Reservatie() {
                 </div>
 
                 <div id="formContainer" className={styles.formContainer}>
+                    <div className={styles.formBackRow}>
+                        <button type="button" onClick={goToCalendar} className={styles.backButton}>&larr; Andere datum</button>
+                    </div>
                     <form onSubmit={handleSubmit}>
                         <h3>Afspraak maken voor {formattedDate}</h3>
                         <label htmlFor="name">Naam:</label>
                         <input type="text" id="name" name="name" required />
 
                         <label htmlFor="email">Email:</label>
-                        <input type="email" id="email" name="email" required defaultValue={sessionEmail ?? ''} />
+                        <input type="email" id="email" name="email" required defaultValue={sessionEmail ?? ''} disabled/>
 
                         <label htmlFor="startTime">Gewenst start uur:</label>
                         <select
@@ -407,13 +446,36 @@ export default function Reservatie() {
                         </em>
                         <textarea id="description" name="description" rows={6} required></textarea>
 
-                        {submitError && <p className={styles.formError}>{submitError}</p>}
-                        {submitMessage && <p className={styles.formMessage}>{submitMessage}</p>}
-
-                        <button type="submit" className={styles.submitButton}>Afspraak bevestigen</button>
+                        <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+                            {isSubmitting ? <><span className={styles.spinner} />Bezig met verzenden...</> : 'Afspraak bevestigen'}
+                        </button>
                     </form>
                 </div>
             </section>
+
+            {showModal && (submitMessage || submitError) && (
+                <div className={styles.modalOverlay} onClick={submitMessage ? closeAndLogout : closeModal}>
+                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                        <button className={styles.modalClose} onClick={submitMessage ? closeAndLogout : closeModal} aria-label="Sluiten">×</button>
+                        {submitMessage && (
+                            <>
+                                <div className={styles.modalIconSuccess}>✓</div>
+                                <h3 className={styles.modalTitle}>Aanvraag verzonden</h3>
+                                <p className={styles.modalBody}>{submitMessage}</p>
+                            </>
+                        )}
+                        {submitError && (
+                            <>
+                                <div className={styles.modalIconError}>!</div>
+                                <h3 className={`${styles.modalTitle} ${styles.modalTitleError}`}>Er is een fout opgetreden</h3>
+                                <p className={styles.modalBody}>{submitError}</p>
+                            </>
+                        )}
+                        <button className={styles.modalActionButton} onClick={submitMessage ? closeAndLogout : closeModal}>Sluiten</button>
+                    </div>
+                </div>
+            )}
+
             <Footer />
         </div>
     );
