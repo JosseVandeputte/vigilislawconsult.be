@@ -13,6 +13,7 @@ const formatDate = (value: string) => {
 type Token = {
   id: string;
   name: string;
+  email: string;
   value: string;
   isActive: boolean;
   expiresAt: string | null;
@@ -25,6 +26,7 @@ export default function AdminTokensPage() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [tokenExpiresAt, setTokenExpiresAt] = useState('');
   const [tokenName, setTokenName] = useState('');
+  const [tokenEmail, setTokenEmail] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,11 +56,16 @@ export default function AdminTokensPage() {
       setError('Geef een naam op voor deze token.');
       return;
     }
+    if (!tokenEmail.trim()) {
+      setError('Geef een e-mailadres op voor deze token.');
+      return;
+    }
 
     setMessage(null);
     setError(null);
     const payload = {
       name: tokenName.trim(),
+      email: tokenEmail.trim(),
       expiresAt: tokenExpiresAt ? new Date(tokenExpiresAt).toISOString() : undefined
     };
     const response = await fetch('/api/admin/tokens', {
@@ -79,6 +86,7 @@ export default function AdminTokensPage() {
     setMessage('Token aangemaakt.');
     setTokenExpiresAt('');
     setTokenName('');
+    setTokenEmail('');
     fetchTokens();
   };
 
@@ -121,6 +129,16 @@ export default function AdminTokensPage() {
               />
             </div>
             <div className={styles.formField}>
+              <label htmlFor="token-email" className={styles.formLabel}>E-mailadres van de klant</label>
+              <input
+                id="token-email"
+                type="email"
+                placeholder="klant@email.com"
+                value={tokenEmail}
+                onChange={(e) => setTokenEmail(e.target.value)}
+              />
+            </div>
+            <div className={styles.formField}>
               <label htmlFor="token-expires-at" className={styles.formLabel}>Vervaldatum (optioneel)</label>
               <input
                 id="token-expires-at"
@@ -142,6 +160,7 @@ export default function AdminTokensPage() {
               <div key={token.id} className={styles.listItem}>
                 <div>
                   <strong>{token.name}</strong>
+                  <div>E-mail: {token.email}</div>
                   <div>Token: {token.value}</div>
                   <div>Vervalt: {token.expiresAt ? formatDate(token.expiresAt) : 'Nooit'}</div>
                 </div>
