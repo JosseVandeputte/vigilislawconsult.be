@@ -34,13 +34,18 @@ Klant opent /reservatie
 
 ---
 
-## Stap 1 — Token check
+## Stap 1 — Token gate (e-mail + toegangscode)
 
-De pagina `/reservatie` is niet publiek toegankelijk. De klant heeft een geldig **toegangstoken** nodig om het formulier te kunnen gebruiken.
+De pagina `/reservatie` is niet publiek toegankelijk. De klant moet **zowel zijn e-mailadres als een persoonlijke toegangscode** invullen om toegang te krijgen.
 
-- Tokens worden aangemaakt via het admin-paneel (`/admin/tokens`)
-- Een token kan een optionele vervaldatum hebben
-- Zonder geldig token wordt de klant doorverwezen
+- Tokens worden aangemaakt via het admin-paneel (`/admin/tokens`) met naam, e-mailadres en optionele vervaldatum
+- Bij aanmaken wordt het e-mailadres in kleine letters opgeslagen
+- De validatie-endpoint (`POST /api/reservations/validate`) controleert:
+  1. Het token bestaat en het e-mailadres klopt
+  2. Het token is actief (`isActive = true`)
+  3. Het token is niet verlopen
+- Zonder geldige combinatie krijgt de klant een foutmelding en blijft de kalender verborgen
+- Na succesvolle validatie wordt het e-mailadres automatisch ingevuld in het reservatieformulier
 
 ---
 
