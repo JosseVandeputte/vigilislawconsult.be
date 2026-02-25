@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../admin.module.css';
@@ -24,6 +25,10 @@ export default function AdminLoginPage() {
   return (
     <section className={styles.adminLogin}>
       <div className={styles.loginCard}>
+        <div className={styles.loginBrand}>
+          <Image src="/Vigilis-Law-Consult_Logo.png" alt="Vigilis Law Consult" width={56} height={56} />
+          <span>Vigilis Law Consult</span>
+        </div>
         <h2>Admin login</h2>
         <p>Log in met je admin token om verder te gaan.</p>
         {error && <p className={styles.error}>{error}</p>}

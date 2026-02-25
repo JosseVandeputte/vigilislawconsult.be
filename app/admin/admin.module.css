@@ -35,8 +35,23 @@
 }
 
 .loginCard h2 {
-  margin: 0 0 0.5rem;
+  margin: 1rem 0 0.5rem;
   color: var(--blue);
+}
+
+.loginBrand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--blue);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.loginBrand img {
+  border-radius: 8px;
 }
 
 .loginCard p {
