@@ -42,19 +42,24 @@ export default function AdminReservationsPage() {
     setLoading(true);
     setError(null);
     const query = statusFilter === 'ALL' ? '' : `?status=${statusFilter}`;
-    const response = await fetch(`/api/admin/reservations${query}`, {
-      headers: { 'x-admin-token': adminToken }
-    });
-    setLoading(false);
+    try {
+      const response = await fetch(`/api/admin/reservations${query}`, {
+        headers: { 'x-admin-token': adminToken }
+      });
+      setLoading(false);
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan reservaties niet laden.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan reservaties niet laden.');
+        return;
+      }
+
+      const data = await response.json();
+      setReservations(data.reservations ?? []);
+    } catch {
+      setLoading(false);
+      setError('Netwerkfout. Kan reservaties niet laden.');
     }
-
-    const data = await response.json();
-    setReservations(data.reservations ?? []);
   }, [adminToken, statusFilter]);
 
   useEffect(() => {
@@ -65,41 +70,49 @@ export default function AdminReservationsPage() {
   const updateReservationStatus = async (id: string, status: Reservation['status']) => {
     setMessage(null);
     setError(null);
-    const response = await fetch(`/api/admin/reservations/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-token': adminToken
-      },
-      body: JSON.stringify({ status })
-    });
+    try {
+      const response = await fetch(`/api/admin/reservations/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': adminToken
+        },
+        body: JSON.stringify({ status })
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan status niet bijwerken.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan status niet bijwerken.');
+        return;
+      }
+
+      setMessage('Reservatie geüpdatet.');
+      fetchReservations();
+    } catch {
+      setError('Netwerkfout. Kan status niet bijwerken.');
     }
-
-    setMessage('Reservatie geüpdatet.');
-    fetchReservations();
   };
 
   const deleteReservation = async (id: string) => {
     setMessage(null);
     setError(null);
-    const response = await fetch(`/api/admin/reservations/${id}`, {
-      method: 'DELETE',
-      headers: { 'x-admin-token': adminToken }
-    });
+    try {
+      const response = await fetch(`/api/admin/reservations/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-token': adminToken }
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan reservatie niet verwijderen.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan reservatie niet verwijderen.');
+        return;
+      }
+
+      setMessage('Reservatie verwijderd.');
+      fetchReservations();
+    } catch {
+      setError('Netwerkfout. Kan reservatie niet verwijderen.');
     }
-
-    setMessage('Reservatie verwijderd.');
-    fetchReservations();
   };
 
   return (

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
 import { logAudit } from '@/lib/audit';
+import { formatZodError, internalError } from '@/lib/api-error';
 
 const BlockedSlotSchema = z.object({
   date: z.string(),
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
   const parsed = BlockedSlotSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Ongeldige invoer.' }, { status: 400 });
+    return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
   }
 
   const { date, startTime, endTime, reason } = parsed.data;
@@ -63,27 +64,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Ongeldige datum.' }, { status: 400 });
   }
 
-  const slot = await prisma.blockedSlot.create({
-    data: {
-      date: dateOnly,
-      startTime,
-      endTime,
-      reason
-    }
-  });
+  try {
+    const slot = await prisma.blockedSlot.create({
+      data: {
+        date: dateOnly,
+        startTime,
+        endTime,
+        reason
+      }
+    });
 
-  await logAudit({
-    action: 'blockedSlot.create',
-    entityType: 'blockedSlot',
-    entityId: slot.id,
-    message: `Blocked slot toegevoegd op ${dateOnly.toLocaleDateString('nl-BE')} ${startTime}-${endTime}`,
-    data: {
-      date: slot.date,
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-      description: slot.reason ?? ''
-    }
-  });
+    await logAudit({
+      action: 'blockedSlot.create',
+      entityType: 'blockedSlot',
+      entityId: slot.id,
+      message: `Blocked slot toegevoegd op ${dateOnly.toLocaleDateString('nl-BE')} ${startTime}-${endTime}`,
+      data: {
+        date: slot.date,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        description: slot.reason ?? ''
+      }
+    });
 
-  return NextResponse.json({ slot }, { status: 201 });
+    return NextResponse.json({ slot }, { status: 201 });
+  } catch (err) {
+    return internalError('admin.blockedSlots.create', err);
+  }
 }

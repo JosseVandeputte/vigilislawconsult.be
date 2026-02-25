@@ -53,18 +53,22 @@ export default function AdminBlockedSlotsPage() {
 
   const fetchSlots = useCallback(async () => {
     if (!adminToken) return;
-    const response = await fetch('/api/admin/blocked-slots', {
-      headers: { 'x-admin-token': adminToken }
-    });
+    try {
+      const response = await fetch('/api/admin/blocked-slots', {
+        headers: { 'x-admin-token': adminToken }
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan geblokkeerde slots niet laden.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan geblokkeerde slots niet laden.');
+        return;
+      }
+
+      const data = await response.json();
+      setSlots(data.slots ?? []);
+    } catch {
+      setError('Netwerkfout. Kan geblokkeerde slots niet laden.');
     }
-
-    const data = await response.json();
-    setSlots(data.slots ?? []);
   }, [adminToken]);
 
   useEffect(() => {
@@ -79,46 +83,54 @@ export default function AdminBlockedSlotsPage() {
     const payloadStart = allDay ? '00:00' : startTime;
     const payloadEnd = allDay ? '23:59' : endTime;
 
-    const response = await fetch('/api/admin/blocked-slots', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-token': adminToken
-      },
-      body: JSON.stringify({ date, startTime: payloadStart, endTime: payloadEnd, reason })
-    });
+    try {
+      const response = await fetch('/api/admin/blocked-slots', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': adminToken
+        },
+        body: JSON.stringify({ date, startTime: payloadStart, endTime: payloadEnd, reason })
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan geblokkeerd slot niet aanmaken.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan geblokkeerd slot niet aanmaken.');
+        return;
+      }
+
+      setMessage('Geblokkeerd slot toegevoegd.');
+      setDate('');
+      setStartTime('');
+      setEndTime('');
+      setAllDay(false);
+      setReason('');
+      fetchSlots();
+    } catch {
+      setError('Netwerkfout. Kan geblokkeerd slot niet aanmaken.');
     }
-
-    setMessage('Geblokkeerd slot toegevoegd.');
-    setDate('');
-    setStartTime('');
-    setEndTime('');
-    setAllDay(false);
-    setReason('');
-    fetchSlots();
   };
 
   const deleteSlot = async (id: string) => {
     setMessage(null);
     setError(null);
-    const response = await fetch(`/api/admin/blocked-slots/${id}`, {
-      method: 'DELETE',
-      headers: { 'x-admin-token': adminToken }
-    });
+    try {
+      const response = await fetch(`/api/admin/blocked-slots/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-token': adminToken }
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan geblokkeerd slot niet verwijderen.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan geblokkeerd slot niet verwijderen.');
+        return;
+      }
+
+      setMessage('Geblokkeerd slot verwijderd.');
+      fetchSlots();
+    } catch {
+      setError('Netwerkfout. Kan geblokkeerd slot niet verwijderen.');
     }
-
-    setMessage('Geblokkeerd slot verwijderd.');
-    fetchSlots();
   };
 
   return (

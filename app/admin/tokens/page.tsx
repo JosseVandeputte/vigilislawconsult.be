@@ -32,18 +32,22 @@ export default function AdminTokensPage() {
 
   const fetchTokens = useCallback(async () => {
     if (!adminToken) return;
-    const response = await fetch('/api/admin/tokens', {
-      headers: { 'x-admin-token': adminToken }
-    });
+    try {
+      const response = await fetch('/api/admin/tokens', {
+        headers: { 'x-admin-token': adminToken }
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan tokens niet laden.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan tokens niet laden.');
+        return;
+      }
+
+      const data = await response.json();
+      setTokens(data.tokens ?? []);
+    } catch {
+      setError('Netwerkfout. Kan tokens niet laden.');
     }
-
-    const data = await response.json();
-    setTokens(data.tokens ?? []);
   }, [adminToken]);
 
   useEffect(() => {
@@ -68,44 +72,52 @@ export default function AdminTokensPage() {
       email: tokenEmail.trim(),
       expiresAt: tokenExpiresAt ? new Date(tokenExpiresAt).toISOString() : undefined
     };
-    const response = await fetch('/api/admin/tokens', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-token': adminToken
-      },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const response = await fetch('/api/admin/tokens', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-token': adminToken
+        },
+        body: JSON.stringify(payload)
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan token niet aanmaken.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan token niet aanmaken.');
+        return;
+      }
+
+      setMessage('Token aangemaakt.');
+      setTokenExpiresAt('');
+      setTokenName('');
+      setTokenEmail('');
+      fetchTokens();
+    } catch {
+      setError('Netwerkfout. Kan token niet aanmaken.');
     }
-
-    setMessage('Token aangemaakt.');
-    setTokenExpiresAt('');
-    setTokenName('');
-    setTokenEmail('');
-    fetchTokens();
   };
 
   const deleteToken = async (id: string) => {
     setMessage(null);
     setError(null);
-    const response = await fetch(`/api/admin/tokens/${id}`, {
-      method: 'DELETE',
-      headers: { 'x-admin-token': adminToken }
-    });
+    try {
+      const response = await fetch(`/api/admin/tokens/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-token': adminToken }
+      });
 
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      setError(data?.error ?? 'Kan token niet verwijderen.');
-      return;
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Kan token niet verwijderen.');
+        return;
+      }
+
+      setMessage('Token verwijderd.');
+      fetchTokens();
+    } catch {
+      setError('Netwerkfout. Kan token niet verwijderen.');
     }
-
-    setMessage('Token verwijderd.');
-    fetchTokens();
   };
 
   return (

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
 import { logAudit } from '@/lib/audit';
+import { internalError } from '@/lib/api-error';
 
 const UpdateSchema = z.object({
   isActive: z.boolean().optional(),
@@ -26,32 +27,36 @@ export async function PATCH(
     return NextResponse.json({ error: 'Ongeldige invoer.' }, { status: 400 });
   }
 
-  const token = await prisma.token.update({
-    where: { id },
-    data: {
-      isActive: parsed.data.isActive,
-      expiresAt: parsed.data.expiresAt === undefined
-        ? undefined
-        : parsed.data.expiresAt
-          ? new Date(parsed.data.expiresAt)
-          : null
-    }
-  });
+  try {
+    const token = await prisma.token.update({
+      where: { id },
+      data: {
+        isActive: parsed.data.isActive,
+        expiresAt: parsed.data.expiresAt === undefined
+          ? undefined
+          : parsed.data.expiresAt
+            ? new Date(parsed.data.expiresAt)
+            : null
+      }
+    });
 
-  await logAudit({
-    action: 'token.update',
-    entityType: 'token',
-    entityId: token.id,
-    message: `Token bijgewerkt (${token.name})`,
-    data: {
-      name: token.name,
-      value: token.value,
-      isActive: token.isActive,
-      expiresAt: token.expiresAt
-    }
-  });
+    await logAudit({
+      action: 'token.update',
+      entityType: 'token',
+      entityId: token.id,
+      message: `Token bijgewerkt (${token.name})`,
+      data: {
+        name: token.name,
+        value: token.value,
+        isActive: token.isActive,
+        expiresAt: token.expiresAt
+      }
+    });
 
-  return NextResponse.json({ token });
+    return NextResponse.json({ token });
+  } catch (err) {
+    return internalError('admin.tokens.update', err);
+  }
 }
 
 export async function DELETE(
@@ -64,17 +69,21 @@ export async function DELETE(
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
 
-  const deleted = await prisma.token.delete({ where: { id } });
-  await logAudit({
-    action: 'token.delete',
-    entityType: 'token',
-    entityId: id,
-    message: `Token verwijderd (${deleted.name})`,
-    data: {
-      name: deleted.name,
-      value: deleted.value,
-      expiresAt: deleted.expiresAt
-    }
-  });
-  return NextResponse.json({ ok: true });
+  try {
+    const deleted = await prisma.token.delete({ where: { id } });
+    await logAudit({
+      action: 'token.delete',
+      entityType: 'token',
+      entityId: id,
+      message: `Token verwijderd (${deleted.name})`,
+      data: {
+        name: deleted.name,
+        value: deleted.value,
+        expiresAt: deleted.expiresAt
+      }
+    });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return internalError('admin.tokens.delete', err);
+  }
 }

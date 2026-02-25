@@ -3,6 +3,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
 import { logAudit } from '@/lib/audit';
+import { formatZodError, internalError } from '@/lib/api-error';
 
 const CreateTokenSchema = z.object({
   name: z.string().min(2),
@@ -38,32 +39,36 @@ export async function POST(request: Request) {
   const parsed = CreateTokenSchema.safeParse(body ?? {});
 
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Ongeldige invoer.' }, { status: 400 });
+    return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
   }
 
-  const value = generateToken();
-  const token = await prisma.token.create({
-    data: {
-      name: parsed.data.name,
-      email: parsed.data.email.toLowerCase(),
-      value,
-      isActive: true,
-      expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null
-    }
-  });
+  try {
+    const value = generateToken();
+    const token = await prisma.token.create({
+      data: {
+        name: parsed.data.name,
+        email: parsed.data.email.toLowerCase(),
+        value,
+        isActive: true,
+        expiresAt: parsed.data.expiresAt ? new Date(parsed.data.expiresAt) : null
+      }
+    });
 
-  await logAudit({
-    action: 'token.create',
-    entityType: 'token',
-    entityId: token.id,
-    message: `Token aangemaakt (${token.name})`,
-    data: {
-      name: token.name,
-      email: token.email,
-      value: token.value,
-      expiresAt: token.expiresAt
-    }
-  });
+    await logAudit({
+      action: 'token.create',
+      entityType: 'token',
+      entityId: token.id,
+      message: `Token aangemaakt (${token.name})`,
+      data: {
+        name: token.name,
+        email: token.email,
+        value: token.value,
+        expiresAt: token.expiresAt
+      }
+    });
 
-  return NextResponse.json({ token }, { status: 201 });
+    return NextResponse.json({ token }, { status: 201 });
+  } catch (err) {
+    return internalError('admin.tokens.create', err);
+  }
 }

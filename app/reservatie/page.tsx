@@ -310,6 +310,9 @@ export default function Reservatie() {
             setEndTime('');
             setSubmitMessage('Aanvraag ontvangen. U krijgt bericht na goedkeuring. In uw mail ontvangt u ook een overzicht van uw aanvraag.');
             setShowModal(true);
+        } catch {
+            setSubmitError('Netwerkfout. Controleer uw internetverbinding en probeer opnieuw.');
+            setShowModal(true);
         } finally {
             setIsSubmitting(false);
         }

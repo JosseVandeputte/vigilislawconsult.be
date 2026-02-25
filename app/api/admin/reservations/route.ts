@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { requireAdminToken } from '@/lib/admin-auth';
+import { internalError } from '@/lib/api-error';
 
 const StatusQuerySchema = z.object({
   status: z.enum(['PENDING', 'ACCEPTED', 'REJECTED', 'CANCELED', 'ALL']).optional()
@@ -21,12 +22,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Ongeldige status filter.' }, { status: 400 });
   }
 
-  const reservations = await prisma.reservation.findMany({
-    where: parsed.data.status && parsed.data.status !== 'ALL'
-      ? { status: parsed.data.status }
-      : undefined,
-    orderBy: [{ date: 'asc' }, { startTime: 'asc' }]
-  });
-
-  return NextResponse.json({ reservations });
+  try {
+    const reservations = await prisma.reservation.findMany({
+      where: parsed.data.status && parsed.data.status !== 'ALL'
+        ? { status: parsed.data.status }
+        : undefined,
+      orderBy: [{ date: 'asc' }, { startTime: 'asc' }]
+    });
+    return NextResponse.json({ reservations });
+  } catch (err) {
+    return internalError('admin.reservations.list', err);
+  }
 }

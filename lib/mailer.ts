@@ -28,16 +28,21 @@ export const sendMail = async (params: {
   const from = process.env.MAIL_FROM;
 
   if (!transporter || !from) {
+    console.error('[mailer] SMTP not configured — mail not sent to', params.to);
     return { ok: false as const, error: 'SMTP not configured' };
   }
 
-  await transporter.sendMail({
-    from,
-    to: params.to,
-    subject: params.subject,
-    text: params.text,
-    html: params.html
-  });
-
-  return { ok: true as const };
+  try {
+    await transporter.sendMail({
+      from,
+      to: params.to,
+      subject: params.subject,
+      text: params.text,
+      html: params.html
+    });
+    return { ok: true as const };
+  } catch (err) {
+    console.error('[mailer] Failed to send mail to', params.to, ':', err);
+    return { ok: false as const, error: err instanceof Error ? err.message : String(err) };
+  }
 };
