@@ -34,6 +34,7 @@ export default function AdminReservationsPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [statusFilter, setStatusFilter] = useState<'ALL' | Reservation['status']>('PENDING');
   const [loading, setLoading] = useState(false);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,9 +42,8 @@ export default function AdminReservationsPage() {
     if (!adminToken) return;
     setLoading(true);
     setError(null);
-    const query = statusFilter === 'ALL' ? '' : `?status=${statusFilter}`;
     try {
-      const response = await fetch(`/api/admin/reservations${query}`, {
+      const response = await fetch('/api/admin/reservations', {
         headers: { 'x-admin-token': adminToken }
       });
       setLoading(false);
@@ -60,7 +60,7 @@ export default function AdminReservationsPage() {
       setLoading(false);
       setError('Netwerkfout. Kan reservaties niet laden.');
     }
-  }, [adminToken, statusFilter]);
+  }, [adminToken]);
 
   useEffect(() => {
     if (!ready || !adminToken) return;
@@ -70,6 +70,7 @@ export default function AdminReservationsPage() {
   const updateReservationStatus = async (id: string, status: Reservation['status']) => {
     setMessage(null);
     setError(null);
+    setUpdatingId(id);
     try {
       const response = await fetch(`/api/admin/reservations/${id}`, {
         method: 'PATCH',
@@ -87,15 +88,18 @@ export default function AdminReservationsPage() {
       }
 
       setMessage('Reservatie geüpdatet.');
-      fetchReservations();
+      await fetchReservations();
     } catch {
       setError('Netwerkfout. Kan status niet bijwerken.');
+    } finally {
+      setUpdatingId(null);
     }
   };
 
   const deleteReservation = async (id: string) => {
     setMessage(null);
     setError(null);
+    setUpdatingId(id);
     try {
       const response = await fetch(`/api/admin/reservations/${id}`, {
         method: 'DELETE',
@@ -109,9 +113,11 @@ export default function AdminReservationsPage() {
       }
 
       setMessage('Reservatie verwijderd.');
-      fetchReservations();
+      await fetchReservations();
     } catch {
       setError('Netwerkfout. Kan reservatie niet verwijderen.');
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -141,9 +147,11 @@ export default function AdminReservationsPage() {
             <p>Bezig met laden...</p>
           ) : (
             <div className={styles.list}>
-              {reservations.length === 0 && <p>Geen reservaties gevonden.</p>}
-              {reservations.map((reservation) => (
-                <div key={reservation.id} className={styles.listItem}>
+              {reservations.filter(r => statusFilter === 'ALL' || r.status === statusFilter).length === 0 && <p>Geen reservaties gevonden.</p>}
+              {reservations
+                .filter(r => statusFilter === 'ALL' || r.status === statusFilter)
+                .map((reservation) => (
+                <div key={reservation.id} className={`${styles.listItem}${updatingId === reservation.id ? ` ${styles.updating}` : ''}`}>
                   <div>
                     <strong>{reservation.name}</strong> ({reservation.email})
                     <div>
@@ -153,10 +161,10 @@ export default function AdminReservationsPage() {
                   </div>
                   <div className={styles.actions}>
                     <span className={styles.status}>{statusLabels[reservation.status] ?? reservation.status}</span>
-                    <button type="button" onClick={() => updateReservationStatus(reservation.id, 'ACCEPTED')}>Accepteer</button>
-                    <button type="button" onClick={() => updateReservationStatus(reservation.id, 'REJECTED')}>Weiger</button>
-                    <button type="button" onClick={() => updateReservationStatus(reservation.id, 'CANCELED')}>Annuleer</button>
-                    <button type="button" className={styles.dangerButton} onClick={() => deleteReservation(reservation.id)}>Verwijder</button>
+                    <button type="button" disabled={updatingId === reservation.id} onClick={() => updateReservationStatus(reservation.id, 'ACCEPTED')}>Accepteer</button>
+                    <button type="button" disabled={updatingId === reservation.id} onClick={() => updateReservationStatus(reservation.id, 'REJECTED')}>Weiger</button>
+                    <button type="button" disabled={updatingId === reservation.id} onClick={() => updateReservationStatus(reservation.id, 'CANCELED')}>Annuleer</button>
+                    <button type="button" className={styles.dangerButton} disabled={updatingId === reservation.id} onClick={() => deleteReservation(reservation.id)}>{updatingId === reservation.id ? 'Bezig...' : 'Verwijder'}</button>
                   </div>
                 </div>
               ))}

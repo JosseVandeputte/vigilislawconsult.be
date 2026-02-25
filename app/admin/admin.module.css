@@ -306,6 +306,11 @@
   align-items: flex-start;
 }
 
+.updating {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .listItem > div:first-child {
   display: flex;
   flex-direction: column;
