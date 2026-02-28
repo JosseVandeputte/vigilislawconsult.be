@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAdminToken } from './admin-utils';
 import styles from './admin-layout.module.css';
+import { apiUrl } from '@/lib/api-url';
 
 const navItems = [
   {
@@ -63,7 +63,6 @@ const navItems = [
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { setAdminToken } = useAdminToken();
 
   const isLoginPage = pathname === '/admin/login' || pathname === '/admin';
 
@@ -96,8 +95,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <button
             type="button"
             className={styles.logoutButton}
-            onClick={() => {
-              setAdminToken('');
+            onClick={async () => {
+              await fetch(apiUrl('/api/admin/logout'), {
+                method: 'POST',
+                credentials: 'include',
+              });
               window.location.href = '/admin/login';
             }}
           >

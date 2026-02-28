@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import styles from '../admin.module.css';
-import { useAdminToken, useRequireAdmin } from '../admin-utils';
+import { useRequireAdmin } from '../admin-utils';
+import { apiUrl } from '@/lib/api-url';
 
 const formatDate = (value: string) => {
   const date = new Date(value);
@@ -29,8 +30,7 @@ type Reservation = {
 };
 
 export default function AdminReservationsPage() {
-  const { adminToken, ready } = useAdminToken();
-  useRequireAdmin();
+  const { isLoggedIn, ready } = useRequireAdmin();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [statusFilter, setStatusFilter] = useState<'ALL' | Reservation['status']>('PENDING');
   const [loading, setLoading] = useState(false);
@@ -39,12 +39,12 @@ export default function AdminReservationsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchReservations = useCallback(async () => {
-    if (!adminToken) return;
+    if (!isLoggedIn) return;
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/admin/reservations', {
-        headers: { 'x-admin-token': adminToken }
+      const response = await fetch(apiUrl('/api/admin/reservations'), {
+        credentials: 'include'
       });
       setLoading(false);
 
@@ -60,24 +60,22 @@ export default function AdminReservationsPage() {
       setLoading(false);
       setError('Netwerkfout. Kan reservaties niet laden.');
     }
-  }, [adminToken]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    if (!ready || !adminToken) return;
+    if (!ready || !isLoggedIn) return;
     fetchReservations();
-  }, [ready, adminToken, fetchReservations]);
+  }, [ready, isLoggedIn, fetchReservations]);
 
   const updateReservationStatus = async (id: string, status: Reservation['status']) => {
     setMessage(null);
     setError(null);
     setUpdatingId(id);
     try {
-      const response = await fetch(`/api/admin/reservations/${id}`, {
+      const response = await fetch(apiUrl(`/api/admin/reservations/${id}`), {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': adminToken
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ status })
       });
 
@@ -101,9 +99,9 @@ export default function AdminReservationsPage() {
     setError(null);
     setUpdatingId(id);
     try {
-      const response = await fetch(`/api/admin/reservations/${id}`, {
+      const response = await fetch(apiUrl(`/api/admin/reservations/${id}`), {
         method: 'DELETE',
-        headers: { 'x-admin-token': adminToken }
+        credentials: 'include'
       });
 
       if (!response.ok) {

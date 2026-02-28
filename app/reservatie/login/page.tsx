@@ -5,6 +5,7 @@ import Header from '../../components/header';
 import styles from '../reservatie.module.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { apiUrl } from '@/lib/api-url';
 
 export default function ReservatiLoginPage() {
     const router = useRouter();
@@ -18,9 +19,10 @@ export default function ReservatiLoginPage() {
         setError(null);
         setStatus('loading');
 
-        const response = await fetch('/api/reservations/validate', {
+        const response = await fetch(apiUrl('/api/reservations/validate'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email: email.trim(), token: token.trim() })
         });
 
@@ -31,7 +33,6 @@ export default function ReservatiLoginPage() {
             return;
         }
 
-        sessionStorage.setItem('reservatie_email', email.trim().toLowerCase());
         router.push('/reservatie');
     };
 

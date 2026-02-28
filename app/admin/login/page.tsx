@@ -4,22 +4,43 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../admin.module.css';
-import { useAdminToken } from '../admin-utils';
+import { apiUrl } from '@/lib/api-url';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { setAdminToken } = useAdminToken();
   const [token, setToken] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!token.trim()) {
       setError('Vul een admin token in.');
       return;
     }
-    setAdminToken(token.trim());
-    router.push('/admin/calendar');
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch(apiUrl('/api/admin/login'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ token: token.trim() }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        setError(data?.error ?? 'Ongeldige token.');
+        return;
+      }
+
+      router.push('/admin/calendar');
+    } catch {
+      setError('Netwerkfout. Probeer opnieuw.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,9 +60,12 @@ export default function AdminLoginPage() {
             value={token}
             onChange={(e) => setToken(e.target.value)}
           />
-          <button type="submit">Inloggen</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Bezig...' : 'Inloggen'}
+          </button>
         </form>
       </div>
     </section>
   );
 }
+

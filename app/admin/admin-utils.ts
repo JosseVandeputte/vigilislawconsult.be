@@ -2,39 +2,43 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiUrl } from '@/lib/api-url';
 
-export const useAdminToken = () => {
-  const [adminToken, setAdminToken] = useState('');
+/**
+ * Checks auth status by calling GET /api/admin/me.
+ * The adminToken HttpOnly cookie is sent automatically (credentials: 'include').
+ */
+export const useAdminAuth = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const stored = window.sessionStorage.getItem('adminToken') ?? '';
-    setAdminToken(stored);
-    setReady(true);
+    fetch(apiUrl('/api/admin/me'), { credentials: 'include' })
+      .then((res) => {
+        setIsLoggedIn(res.ok);
+        setReady(true);
+      })
+      .catch(() => {
+        setIsLoggedIn(false);
+        setReady(true);
+      });
   }, []);
 
-  const updateToken = (value: string) => {
-    setAdminToken(value);
-    window.sessionStorage.setItem('adminToken', value);
-  };
-
-  const clearToken = () => {
-    setAdminToken('');
-    window.sessionStorage.removeItem('adminToken');
-  };
-
-  return { adminToken, setAdminToken: updateToken, clearToken, ready };
+  return { isLoggedIn, ready };
 };
 
+/**
+ * Guards an admin page. Redirects to /admin/login when not authenticated.
+ */
 export const useRequireAdmin = () => {
   const router = useRouter();
-  const { adminToken, ready } = useAdminToken();
+  const { isLoggedIn, ready } = useAdminAuth();
 
   useEffect(() => {
-    if (ready && !adminToken) {
+    if (ready && !isLoggedIn) {
       router.push('/admin/login');
     }
-  }, [ready, adminToken, router]);
+  }, [ready, isLoggedIn, router]);
 
-  return { adminToken, ready };
+  return { isLoggedIn, ready };
 };

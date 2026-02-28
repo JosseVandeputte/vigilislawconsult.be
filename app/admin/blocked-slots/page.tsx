@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from '../admin.module.css';
-import { useAdminToken, useRequireAdmin } from '../admin-utils';
+import { useRequireAdmin } from '../admin-utils';
+import { apiUrl } from '@/lib/api-url';
 
 const formatDate = (value: string) => {
   const date = new Date(value);
@@ -19,8 +20,7 @@ type BlockedSlot = {
 };
 
 export default function AdminBlockedSlotsPage() {
-  const { adminToken, ready } = useAdminToken();
-  useRequireAdmin();
+  const { isLoggedIn, ready } = useRequireAdmin();
   const [slots, setSlots] = useState<BlockedSlot[]>([]);
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -52,10 +52,10 @@ export default function AdminBlockedSlotsPage() {
   );
 
   const fetchSlots = useCallback(async () => {
-    if (!adminToken) return;
+    if (!isLoggedIn) return;
     try {
-      const response = await fetch('/api/admin/blocked-slots', {
-        headers: { 'x-admin-token': adminToken }
+      const response = await fetch(apiUrl('/api/admin/blocked-slots'), {
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -69,12 +69,12 @@ export default function AdminBlockedSlotsPage() {
     } catch {
       setError('Netwerkfout. Kan geblokkeerde slots niet laden.');
     }
-  }, [adminToken]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    if (!ready || !adminToken) return;
+    if (!ready || !isLoggedIn) return;
     fetchSlots();
-  }, [ready, adminToken, fetchSlots]);
+  }, [ready, isLoggedIn, fetchSlots]);
 
   const createSlot = async () => {
     setMessage(null);
@@ -84,12 +84,10 @@ export default function AdminBlockedSlotsPage() {
     const payloadEnd = allDay ? '23:59' : endTime;
 
     try {
-      const response = await fetch('/api/admin/blocked-slots', {
+      const response = await fetch(apiUrl('/api/admin/blocked-slots'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': adminToken
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ date, startTime: payloadStart, endTime: payloadEnd, reason })
       });
 
@@ -115,9 +113,9 @@ export default function AdminBlockedSlotsPage() {
     setMessage(null);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/blocked-slots/${id}`, {
+      const response = await fetch(apiUrl(`/api/admin/blocked-slots/${id}`), {
         method: 'DELETE',
-        headers: { 'x-admin-token': adminToken }
+        credentials: 'include'
       });
 
       if (!response.ok) {

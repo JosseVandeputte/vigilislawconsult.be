@@ -7,7 +7,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import nlLocale from '@fullcalendar/core/locales/nl';
-import { useAdminToken, useRequireAdmin } from '../admin-utils';
+import { useRequireAdmin } from '../admin-utils';
+import { apiUrl } from '@/lib/api-url';
 
 const formatDate = (value: string) => {
   const date = new Date(value);
@@ -49,8 +50,7 @@ const statusLabels: Record<Reservation['status'], string> = {
 };
 
 export default function AdminCalendarPage() {
-  const { adminToken, ready } = useAdminToken();
-  useRequireAdmin();
+  const { isLoggedIn, ready } = useRequireAdmin();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>([]);
   const [selected, setSelected] = useState<Reservation | null>(null);
@@ -61,9 +61,9 @@ export default function AdminCalendarPage() {
   const calendarRef = useRef<FullCalendar | null>(null);
 
   const fetchReservations = useCallback(async () => {
-    if (!adminToken) return;
-    const response = await fetch('/api/admin/reservations?status=ALL', {
-      headers: { 'x-admin-token': adminToken }
+    if (!isLoggedIn) return;
+    const response = await fetch(apiUrl('/api/admin/reservations?status=ALL'), {
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -74,12 +74,12 @@ export default function AdminCalendarPage() {
 
     const data = await response.json();
     setReservations(data.reservations ?? []);
-  }, [adminToken]);
+  }, [isLoggedIn]);
 
   const fetchBlockedSlots = useCallback(async () => {
-    if (!adminToken) return;
-    const response = await fetch('/api/admin/blocked-slots', {
-      headers: { 'x-admin-token': adminToken }
+    if (!isLoggedIn) return;
+    const response = await fetch(apiUrl('/api/admin/blocked-slots'), {
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -88,23 +88,21 @@ export default function AdminCalendarPage() {
 
     const data = await response.json();
     setBlockedSlots(data.slots ?? []);
-  }, [adminToken]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    if (!ready || !adminToken) return;
+    if (!ready || !isLoggedIn) return;
     fetchReservations();
     fetchBlockedSlots();
-  }, [ready, adminToken, fetchReservations, fetchBlockedSlots]);
+  }, [ready, isLoggedIn, fetchReservations, fetchBlockedSlots]);
 
   const updateReservationStatus = async (id: string, status: Reservation['status']) => {
     setError(null);
     setMessage(null);
-    const response = await fetch(`/api/admin/reservations/${id}`, {
+    const response = await fetch(apiUrl(`/api/admin/reservations/${id}`), {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-token': adminToken
-      },
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ status })
     });
 
@@ -121,9 +119,9 @@ export default function AdminCalendarPage() {
   const deleteReservation = async (id: string) => {
     setError(null);
     setMessage(null);
-    const response = await fetch(`/api/admin/reservations/${id}`, {
+    const response = await fetch(apiUrl(`/api/admin/reservations/${id}`), {
       method: 'DELETE',
-      headers: { 'x-admin-token': adminToken }
+      credentials: 'include'
     });
 
     if (!response.ok) {

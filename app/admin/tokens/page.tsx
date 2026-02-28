@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import styles from '../admin.module.css';
-import { useAdminToken, useRequireAdmin } from '../admin-utils';
+import { useRequireAdmin } from '../admin-utils';
+import { apiUrl } from '@/lib/api-url';
 
 const formatDate = (value: string) => {
   const date = new Date(value);
@@ -21,8 +22,7 @@ type Token = {
 };
 
 export default function AdminTokensPage() {
-  const { adminToken, ready } = useAdminToken();
-  useRequireAdmin();
+  const { isLoggedIn, ready } = useRequireAdmin();
   const [tokens, setTokens] = useState<Token[]>([]);
   const [tokenExpiresAt, setTokenExpiresAt] = useState('');
   const [tokenName, setTokenName] = useState('');
@@ -31,10 +31,10 @@ export default function AdminTokensPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchTokens = useCallback(async () => {
-    if (!adminToken) return;
+    if (!isLoggedIn) return;
     try {
-      const response = await fetch('/api/admin/tokens', {
-        headers: { 'x-admin-token': adminToken }
+      const response = await fetch(apiUrl('/api/admin/tokens'), {
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -48,12 +48,12 @@ export default function AdminTokensPage() {
     } catch {
       setError('Netwerkfout. Kan tokens niet laden.');
     }
-  }, [adminToken]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    if (!ready || !adminToken) return;
+    if (!ready || !isLoggedIn) return;
     fetchTokens();
-  }, [ready, adminToken, fetchTokens]);
+  }, [ready, isLoggedIn, fetchTokens]);
 
   const createToken = async () => {
     if (!tokenName.trim()) {
@@ -73,12 +73,10 @@ export default function AdminTokensPage() {
       expiresAt: tokenExpiresAt ? new Date(tokenExpiresAt).toISOString() : undefined
     };
     try {
-      const response = await fetch('/api/admin/tokens', {
+      const response = await fetch(apiUrl('/api/admin/tokens'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-admin-token': adminToken
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(payload)
       });
 
@@ -102,9 +100,9 @@ export default function AdminTokensPage() {
     setMessage(null);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/tokens/${id}`, {
+      const response = await fetch(apiUrl(`/api/admin/tokens/${id}`), {
         method: 'DELETE',
-        headers: { 'x-admin-token': adminToken }
+        credentials: 'include'
       });
 
       if (!response.ok) {

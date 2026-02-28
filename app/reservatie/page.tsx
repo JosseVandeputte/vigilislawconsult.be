@@ -6,6 +6,7 @@ import styles from './reservatie.module.css';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { apiUrl } from '@/lib/api-url';
 
 
 export default function Reservatie() {
@@ -14,17 +15,27 @@ export default function Reservatie() {
     const [sessionChecked, setSessionChecked] = useState(false);
 
     useEffect(() => {
-        const email = sessionStorage.getItem('reservatie_email');
-        if (!email) {
-            router.replace('/reservatie/login');
-        } else {
-            setSessionEmail(email);
-            setSessionChecked(true);
-        }
+        fetch(apiUrl('/api/reservations/me'), { credentials: 'include' })
+            .then((res) => {
+                if (!res.ok) {
+                    router.replace('/reservatie/login');
+                    return null;
+                }
+                return res.json();
+            })
+            .then((data) => {
+                if (data?.email) {
+                    setSessionEmail(data.email);
+                    setSessionChecked(true);
+                }
+            })
+            .catch(() => {
+                router.replace('/reservatie/login');
+            });
     }, [router]);
 
-    const handleLogout = () => {
-        sessionStorage.removeItem('reservatie_email');
+    const handleLogout = async () => {
+        await fetch(apiUrl('/api/reservations/logout'), { method: 'POST', credentials: 'include' });
         router.replace('/reservatie/login');
     };
 
@@ -40,9 +51,9 @@ export default function Reservatie() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const closeModal = () => setShowModal(false);
-    const closeAndLogout = () => {
+    const closeAndLogout = async () => {
         setShowModal(false);
-        sessionStorage.removeItem('reservatie_email');
+        await fetch(apiUrl('/api/reservations/logout'), { method: 'POST', credentials: 'include' });
         router.replace('/reservatie/login');
     };
     const [busySlots, setBusySlots] = useState<Array<{ startTime: string; endTime: string }>>([]);
@@ -213,7 +224,7 @@ export default function Reservatie() {
             setStartTime('');
             setEndTime('');
 
-            const response = await fetch(`/api/reservations?date=${selectedDate.toISOString()}`);
+            const response = await fetch(apiUrl(`/api/reservations?date=${selectedDate.toISOString()}`));
             if (!response.ok) {
                 setBusySlots([]);
                 return;
@@ -240,7 +251,7 @@ export default function Reservatie() {
     useEffect(() => {
         const fetchBlockedDays = async () => {
             const month = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
-            const response = await fetch(`/api/reservations?month=${month}`);
+            const response = await fetch(apiUrl(`/api/reservations?month=${month}`));
             if (!response.ok) {
                 setBlockedDays(new Set());
                 return;
@@ -292,9 +303,10 @@ export default function Reservatie() {
 
         setIsSubmitting(true);
         try {
-            const response = await fetch('/api/reservations', {
+            const response = await fetch(apiUrl('/api/reservations'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(payload)
             });
 

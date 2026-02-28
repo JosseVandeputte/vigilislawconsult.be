@@ -2,16 +2,16 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAdminToken } from './admin-utils';
+import { useAdminAuth } from './admin-utils';
 
 export default function AdminPage() {
   const router = useRouter();
-  const { adminToken, ready } = useAdminToken();
+  const { isLoggedIn, ready } = useAdminAuth();
 
   useEffect(() => {
     if (!ready) return;
-    router.replace(adminToken ? '/admin/calendar' : '/admin/login');
-  }, [adminToken, ready, router]);
+    router.replace(isLoggedIn ? '/admin/calendar' : '/admin/login');
+  }, [isLoggedIn, ready, router]);
 
   return null;
 }

@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from '../admin.module.css';
-import { useAdminToken, useRequireAdmin } from '../admin-utils';
+import { useRequireAdmin } from '../admin-utils';
+import { apiUrl } from '@/lib/api-url';
 
 const formatDateTime = (value: string) => {
   const date = new Date(value);
@@ -31,8 +32,7 @@ type AuditLog = {
 };
 
 export default function AdminAuditPage() {
-  const { adminToken, ready } = useAdminToken();
-  useRequireAdmin();
+  const { isLoggedIn, ready } = useRequireAdmin();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -46,9 +46,9 @@ export default function AdminAuditPage() {
   );
 
   const fetchLogs = useCallback(async () => {
-    if (!adminToken) return;
-    const response = await fetch('/api/admin/audit', {
-      headers: { 'x-admin-token': adminToken }
+    if (!isLoggedIn) return;
+    const response = await fetch(apiUrl('/api/admin/audit'), {
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -59,12 +59,12 @@ export default function AdminAuditPage() {
 
     const data = await response.json();
     setLogs(data.logs ?? []);
-  }, [adminToken]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
-    if (!ready || !adminToken) return;
+    if (!ready || !isLoggedIn) return;
     fetchLogs();
-  }, [ready, adminToken, fetchLogs]);
+  }, [ready, isLoggedIn, fetchLogs]);
 
   return (
     <section className={styles.admin}>
