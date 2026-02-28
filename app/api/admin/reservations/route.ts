@@ -9,7 +9,7 @@ const StatusQuerySchema = z.object({
 });
 
 export async function GET(request: Request) {
-  const auth = await requireAdminToken(request);
+  const auth = await requireAdminToken();
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }

@@ -33,5 +33,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Deze token is verlopen.' }, { status: 401 });
   }
 
-  return NextResponse.json({ valid: true });
+  const isDev = process.env.NODE_ENV !== 'production';
+  const response = NextResponse.json({ valid: true });
+  response.cookies.set('reservationEmail', email.toLowerCase(), {
+    httpOnly: true,
+    secure: !isDev,
+    sameSite: 'lax',
+    path: '/',
+    domain: isDev ? undefined : '.vigilislawconsult.be',
+    maxAge: 60 * 60 * 24, // 24 hours
+  });
+
+  return response;
 }

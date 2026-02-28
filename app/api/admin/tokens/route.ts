@@ -17,7 +17,7 @@ const generateToken = () => {
 };
 
 export async function GET(request: Request) {
-  const auth = await requireAdminToken(request);
+  const auth = await requireAdminToken();
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireAdminToken(request);
+  const auth = await requireAdminToken();
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
