@@ -55,7 +55,7 @@ export default function AdminReservationsPage() {
       }
 
       const data = await response.json();
-      setReservations(data.reservations ?? []);
+      setReservations(Array.isArray(data) ? data : (data.reservations ?? []));
     } catch {
       setLoading(false);
       setError('Netwerkfout. Kan reservaties niet laden.');

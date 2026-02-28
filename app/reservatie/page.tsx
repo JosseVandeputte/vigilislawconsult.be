@@ -224,7 +224,8 @@ export default function Reservatie() {
             setStartTime('');
             setEndTime('');
 
-            const response = await fetch(apiUrl(`/api/reservations?date=${selectedDate.toISOString()}`));
+            const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+            const response = await fetch(apiUrl(`/api/reservations?date=${dateStr}`));
             if (!response.ok) {
                 setBusySlots([]);
                 return;
@@ -257,7 +258,7 @@ export default function Reservatie() {
                 return;
             }
             const data = await response.json();
-            const slots: BlockedSlot[] = data.blockedSlots ?? [];
+            const slots: BlockedSlot[] = Array.isArray(data) ? data : (data.blockedSlots ?? []);
             const fullDayKeys = new Set<string>();
             slots.forEach((slot) => {
                 const startMinutes = timeToMinutes(slot.startTime);
@@ -292,11 +293,12 @@ export default function Reservatie() {
         }
 
         const formData = new FormData(form);
+        const localDateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
         const payload = {
             name: String(formData.get('name') ?? ''),
             email: sessionEmail ?? '',
             description: String(formData.get('description') ?? ''),
-            date: selectedDate.toISOString(),
+            date: localDateStr,
             startTime,
             endTime
         };

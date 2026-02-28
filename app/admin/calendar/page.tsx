@@ -73,7 +73,7 @@ export default function AdminCalendarPage() {
     }
 
     const data = await response.json();
-    setReservations(data.reservations ?? []);
+    setReservations(Array.isArray(data) ? data : (data.reservations ?? []));
   }, [isLoggedIn]);
 
   const fetchBlockedSlots = useCallback(async () => {
@@ -87,7 +87,7 @@ export default function AdminCalendarPage() {
     }
 
     const data = await response.json();
-    setBlockedSlots(data.slots ?? []);
+    setBlockedSlots(Array.isArray(data) ? data : (data.slots ?? []));
   }, [isLoggedIn]);
 
   useEffect(() => {

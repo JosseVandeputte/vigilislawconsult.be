@@ -65,7 +65,7 @@ export default function AdminBlockedSlotsPage() {
       }
 
       const data = await response.json();
-      setSlots(data.slots ?? []);
+      setSlots(Array.isArray(data) ? data : (data.slots ?? []));
     } catch {
       setError('Netwerkfout. Kan geblokkeerde slots niet laden.');
     }

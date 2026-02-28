@@ -43,8 +43,10 @@ export default function AdminTokensPage() {
         return;
       }
 
+      console.log(response);
+
       const data = await response.json();
-      setTokens(data.tokens ?? []);
+      setTokens(Array.isArray(data) ? data : (data.tokens ?? []));
     } catch {
       setError('Netwerkfout. Kan tokens niet laden.');
     }

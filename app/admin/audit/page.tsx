@@ -58,7 +58,7 @@ export default function AdminAuditPage() {
     }
 
     const data = await response.json();
-    setLogs(data.logs ?? []);
+    setLogs(Array.isArray(data) ? data : (data.logs ?? []));
   }, [isLoggedIn]);
 
   useEffect(() => {
