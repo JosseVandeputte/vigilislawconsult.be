@@ -1,9 +1,12 @@
+import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
 
-export const requireAdminToken = async (request: Request) => {
-  const token = request.headers.get('x-admin-token');
+export const requireAdminToken = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('adminToken')?.value;
+
   if (!token) {
-    return { ok: false as const, error: 'Ontbrekende admin token.' };
+    return { ok: false as const, error: 'Niet ingelogd.' };
   }
 
   const master = process.env.ADMIN_MASTER_TOKEN;
@@ -15,8 +18,8 @@ export const requireAdminToken = async (request: Request) => {
     where: {
       value: token,
       isActive: true,
-      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
-    }
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    },
   });
 
   if (!stored) {
