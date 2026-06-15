@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+:root {
+  /* ── Brand colours ─────────────────────── */
+  --blue: #1E2D40;
+  --brown: #CFA177;
+  --white: #f6f6f2;
+  --pure-white: #ffffff;
+
+  /* ── RGB channels (for rgba() usage) ───── */
+  --blue-rgb: 30, 45, 64;
+  --brown-rgb: 207, 161, 119;
+  --white-rgb: 255, 255, 255;
+
+  /* ── Danger / error ─────────────────────── */
+  --danger: #c0392b;
+  --danger-dark: #96281b;
+  --danger-rgb: 192, 57, 43;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-size: 1.015rem;
+}
+
+body {
+  color: black;
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  background-color: var(--white);
+  margin: 1rem auto;
+  max-width: 80vw;
+  min-height: calc(100vh - 8rem - 19.375rem - 2rem);
+  line-height: 1.75rem;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}

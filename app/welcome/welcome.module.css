@@ -1,0 +1,82 @@
+.welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 5rem - 5rem);
+
+    .titles {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-weight: 500;
+        margin-bottom: 3rem;
+
+        h1 {
+            color: var(--blue);
+            margin-top: 1.25rem;
+            font-size: 5rem;
+        }
+
+        h2 {
+            color: var(--brown);
+            font-size: 2rem;
+        }
+    }
+
+    .buttons {
+        display: flex;
+        gap: 3rem;
+
+        button, a {
+            padding: 1rem 1.75rem;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 1.225rem;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .infoButton {
+            background-color: var(--blue);
+            transition: background-color .3s;
+
+            &:hover {
+                background-color: var(--brown);
+            }
+        }
+
+        .reservationButton {
+            background-color: var(--brown);
+            transition: background-color .3s;
+
+            &:hover {
+                background-color: var(--blue);
+            }
+        }
+    }
+
+    .arrows {
+        position: absolute;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 65vw;
+
+        img {
+            &:nth-of-type(1) {
+                transform: rotate(290deg);
+            }
+
+            &:nth-of-type(2) {
+            transform: rotate(-250deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            display: none;
+        }
+    }
+}

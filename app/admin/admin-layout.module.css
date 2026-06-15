@@ -1,0 +1,118 @@
+/* ── Admin shell ─────────────────────────────────── */
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--white);
+}
+
+/* ── Sidebar ─────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background-color: var(--blue);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.brand {
+  padding: 1.75rem 1.5rem 1.5rem;
+  border-bottom: 1px solid rgba(var(--white-rgb), 0.08);
+}
+
+.brandTitle {
+  display: block;
+  color: var(--pure-white);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brandSub {
+  display: block;
+  color: var(--brown);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.2rem;
+}
+
+/* ── Nav links ───────────────────────────────────── */
+.nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  color: rgba(var(--white-rgb), 0.82);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  background: rgba(var(--white-rgb), 0.08);
+  color: var(--pure-white);
+}
+
+.navActive {
+  background: var(--brown) !important;
+  color: var(--blue) !important;
+}
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* ── Logout footer ───────────────────────────────── */
+.navFooter {
+  padding: 1rem 0.75rem 1.5rem;
+  border-top: 1px solid rgba(var(--white-rgb), 0.08);
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(var(--white-rgb), 0.78);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-align: left;
+}
+
+.logoutButton:hover {
+  background: rgba(var(--white-rgb), 0.08);
+  color: var(--pure-white);
+}
+
+/* ── Main content area ───────────────────────────── */
+.content {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+}
