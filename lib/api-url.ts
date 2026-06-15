@@ -7,4 +7,4 @@
  *   "https://api.vigilislawconsult.be", so all API calls are prefixed.
  */
 export const apiUrl = (path: string): string =>
-  `https://vlc-server-feb-2026.deno.dev${path}`;
+  `${process.env.NEXT_PUBLIC_API_URL}${path}`;
