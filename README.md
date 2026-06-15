@@ -143,7 +143,7 @@ De website bevat twee grote onderdelen:
 - **Client-side**: React 19
 
 ### Backend
-- **API**: Externe Deno API ([SwaggerHub](https://vlc-server-feb-2026.deno.dev))
+- **API**: Externe Deno API ([SwaggerHub](https://api.vigilislawconsult.be))
 - **Authenticatie**: Cookie-gebaseerde sessies
 - **Transport**: HTTP/2 via CORS
 
