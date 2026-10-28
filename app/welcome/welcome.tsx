@@ -12,7 +12,8 @@ export default function Welcome() {
             </div>
             <div className={styles.buttons}>
                 <button className={styles.infoButton} onClick={() => scrollToSection('wie-ben-ik')}>Over ons</button>
-                <Link href="/reservatie" className={styles.reservationButton}>Reservatie</Link>
+                {/* <Link href="/reservatie" className={styles.reservationButton}>Reservatie</Link> */}
+                <Link href="/" className={styles.reservationButton}>Reservatie <br/> (binnenkort beschikbaar)</Link>
             </div>
             <div className={styles.arrows} aria-hidden="true">
                 <Image src="/arrow.png" alt="" width={800} height={800}/>

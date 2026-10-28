@@ -54,12 +54,15 @@
         }
 
         .reservationButton {
-            background-color: var(--brown);
+            cursor: not-allowed;
+            /* background-color: var(--brown); */
+            background-color: lightgray;
+            text-align: center;
             transition: background-color .3s;
-
+/* 
             &:hover {
                 background-color: var(--blue);
-            }
+            } */
         }
     }
 
