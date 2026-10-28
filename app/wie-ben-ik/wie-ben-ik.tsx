@@ -42,7 +42,7 @@ export default function WieBenIk() {
                     <div className={styles['meer-info']}>
                         <h3>Meer info</h3>
                         <p>Voor meer info kunt u altijd een kijkje nemen op mijn LinkedIn pagina.</p>
-                        <Link target="blank" href={"https://www.linkedin.com/in/filip-s-55061a290/"}>Ga naar mijn LinkedIn</Link>
+                        <Link target="_blank" rel="noopener noreferrer" href={"https://www.linkedin.com/in/filip-s-55061a290/"}>Ga naar mijn LinkedIn</Link>
                     </div>
                 </div>
                 <aside>

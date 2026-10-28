@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./footer.module.css";
+import { scrollToSection as scrollTo } from "@/lib/scroll";
 
 export default function Footer() {
     const pathname = usePathname();
@@ -12,10 +13,7 @@ export default function Footer() {
         // Only prevent default and scroll if we're on the home page
         if (pathname === '/') {
             e.preventDefault();
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            }
+            scrollTo(sectionId);
         }
     };
 
@@ -44,11 +42,11 @@ export default function Footer() {
                         </li>
                     </ul>
                 </div>
-                <div className={styles.footerContact}>
+                <div id="contact" className={styles.footerContact}>
                     <h3>Contact</h3>
                     <p>Naam: Filip Scheemaker</p>
                     <p>Adres: 18-oktoberstraat 27 <br/> 8000 Brugge</p> 
-                    <p>Telefoon: <a href="tel:+32 470 84 69 32">+32 470 84 69 32</a></p>
+                    <p>Telefoon: <a href="tel:+32470846932">+32 470 84 69 32</a></p>
                     <p>Email: <a href="mailto:&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;">&#105;&#110;&#102;&#111;&#64;&#118;&#105;&#103;&#105;&#108;&#105;&#115;&#108;&#97;&#119;&#99;&#111;&#110;&#115;&#117;&#108;&#116;&#46;&#98;&#101;</a></p>
                     <p>Ondernemingsnummer: BE0804.955.587</p>
                     <p>Rekeningnummer: BE51 7340 7260 9862</p>
@@ -60,7 +58,7 @@ export default function Footer() {
                     <Link href="/">
                         <Image 
                         src="/K-Vigilis-Law-Consult_Logo.jpg" 
-                        alt={"logo"} 
+                        alt="Vigilis Law Consult – naar de startpagina" 
                         width={200} 
                         height={200}
                         />

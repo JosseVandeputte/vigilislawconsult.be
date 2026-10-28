@@ -6,7 +6,7 @@
 
     h2 {
         color: var(--blue);
-        font-size: 2.5rem;
+        font-size: var(--fs-section-title);
         margin: 2rem 0 3rem;
         font-weight: 600;
         text-align: center;
@@ -31,7 +31,7 @@
 
     
         h3 {
-            font-size: 1.5rem;
+            font-size: var(--fs-card-title);
             margin: .5rem 0 1rem;
             font-weight: 500;
         }
@@ -48,12 +48,60 @@
         }
 
         .prijs {
-            font-size: 1.5rem;
+            font-size: var(--fs-card-title);
             font-weight: 600;
             color: var(--brown);
             margin-top: auto;
             padding-top: 1rem;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+/* ── Tablet en smartphone ───────────────────────────────────────────
+   Drie naast elkaar als dat past, anders twee met de derde over de volle
+   breedte, en op een smal scherm onder elkaar — volgens de ruimte. */
+@media (max-width: 1099px) {
+    .watKostHet {
+        width: 100%;
+        padding-top: 2rem;
+        min-height: auto;
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .telefonischeConsultatie,
+        .desktopAdviezen,
+        .groteProjecten {
+            flex: 1 1 15rem;
+            min-width: 0;
+
+            /* Een e-mailadres heeft geen breekpunt; zo blijft het in de kaart.
+               (Niet op desktop: daar verandert het de kolomverdeling.) */
+            a {
+                overflow-wrap: anywhere;
+            }
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .watKostHet {
+        h2 {
+            margin: 1.5rem 0;
+            line-height: 1.2;
+        }
+
+        .content {
+            gap: 1rem;
+        }
+
+        .telefonischeConsultatie,
+        .desktopAdviezen,
+        .groteProjecten {
+            padding: 1rem 1rem 1rem 1.25rem;
         }
     }
 }

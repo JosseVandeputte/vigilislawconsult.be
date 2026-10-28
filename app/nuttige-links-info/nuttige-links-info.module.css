@@ -1,0 +1,12 @@
+/* Op desktop blijft de titel zoals hij was; op kleinere schermen kreeg hij
+   geen enkele ruimte tussen de laatste kaart en de footer. */
+@media (max-width: 1099px) {
+    .title {
+        margin: 3rem 0 2.5rem;
+        color: var(--blue);
+        font-size: var(--fs-section-title);
+        line-height: 1.2;
+        font-weight: 600;
+        text-align: center;
+    }
+}

@@ -1,9 +1,14 @@
 .header {
-    height: 8rem;
+    height: var(--header-h);
     background-color: var(--blue);
     color: var(--brown);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     padding: 1rem 0;
+}
+
+/* Mobiele balk met logo + hamburger. Op desktop volledig verborgen. */
+.bar {
+    display: none;
 }
 
 .navList {
@@ -43,4 +48,127 @@
 
 .navList li:not(.logo) a:hover::after {
     width: 100%;
+}
+
+/* Goud op donkerblauw: duidelijk zichtbare focusrand. */
+.header :focus-visible {
+    outline-color: var(--brown);
+}
+
+/* ── Tablet liggend: smallere marge, kleiner lettertype ──────────── */
+@media (max-width: 1099px) {
+    .navList {
+        width: 94vw;
+        font-size: 0.95rem;
+    }
+
+    .navList li {
+        padding: 1rem 0.5rem;
+    }
+}
+
+/* ── Tablet staand en kleiner: hamburgermenu ─────────────────────── */
+@media (max-width: 767px) {
+    .header {
+        height: auto;
+        padding: 0;
+        position: relative;
+    }
+
+    .bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: var(--header-h);
+        padding: 0 1rem;
+    }
+
+    .barLogo {
+        display: flex;
+        align-items: center;
+    }
+
+    .barLogo img {
+        width: 3rem;
+        height: 3rem;
+        object-fit: contain;
+    }
+
+    .burger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        /* 44x44 is de minimale aanraakzone die iOS en Android aanraden. */
+        width: 44px;
+        height: 44px;
+        padding: 10px;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .burgerLine {
+        display: block;
+        width: 100%;
+        height: 2px;
+        border-radius: 2px;
+        background-color: var(--brown);
+        transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+
+    .burgerOpen .burgerLine:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .burgerOpen .burgerLine:nth-child(2) {
+        opacity: 0;
+    }
+
+    .burgerOpen .burgerLine:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* Het menu zelf: uitklappend paneel onder de balk. */
+    .navList {
+        display: none;
+        width: 100%;
+        grid-template-columns: 1fr;
+        text-align: left;
+        border-top: 1px solid rgba(var(--brown-rgb), 0.25);
+    }
+
+    .navListOpen {
+        display: grid;
+    }
+
+    .navList li {
+        justify-content: flex-start;
+        padding: 0;
+        min-height: 0;
+        border-bottom: 1px solid rgba(var(--brown-rgb), 0.15);
+    }
+
+    .navList li:last-child {
+        border-bottom: none;
+    }
+
+    .navList li a {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        /* Volledige rij aanklikbaar, ruim boven de 44px aanraakzone. */
+        min-height: 52px;
+        padding: 0 1rem;
+    }
+
+    /* Focusrand binnen de rij, anders valt hij buiten het paneel weg. */
+    .navList li a:focus-visible {
+        outline-offset: -3px;
+    }
+
+    /* Het logo staat al in de balk, niet nog eens in de lijst. */
+    .navList li.logo {
+        display: none;
+    }
 }

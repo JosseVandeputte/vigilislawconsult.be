@@ -6,7 +6,7 @@
 
     h2 {
         color: var(--blue);
-        font-size: 2.5rem;
+        font-size: var(--fs-section-title);
         margin: 2rem 0 3rem;
         font-weight: 600;
         text-align: center;
@@ -36,7 +36,7 @@
     }
 
     .gridItem h3 {
-        font-size: 1.5rem;
+        font-size: var(--fs-card-title);
         margin: 0 0 1rem;
         font-weight: 500;
     }
@@ -56,3 +56,43 @@
     }
 }
 
+
+/* ── Tablet en smartphone ───────────────────────────────────────────
+   Geen vaste kolommen per toestel: zoveel kaarten naast elkaar als er
+   plaats is. Met minstens 18.5rem per kaart zijn dat er onder 1100px
+   hooguit twee, zodat "bewakingswetgeving" niet midden in het woord breekt.
+   Een kaart die alleen op haar rij overblijft, vult die rij. */
+@media (max-width: 1099px) {
+    .onsAanbod {
+        width: 100%;
+        padding-top: 3rem;
+        min-height: auto;
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .gridItem {
+            flex: 1 1 18.5rem;
+            min-width: 0;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .onsAanbod h2 {
+        margin: 1.5rem 0;
+        line-height: 1.2;
+    }
+}
+
+/* De sierrand rechts kost breedte die we op een smal scherm nodig hebben. */
+@media (max-width: 640px) {
+    .onsAanbod .content {
+        gap: 1rem;
+        border-right: none;
+        padding: 0;
+    }
+}

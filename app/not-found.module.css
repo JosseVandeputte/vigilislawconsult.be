@@ -17,7 +17,7 @@
 }
 
 .errorCode {
-  font-size: 8rem;
+  font-size: clamp(4.5rem, 2rem + 10vw, 8rem);
   font-weight: 900;
   color: var(--brown);
   line-height: 1;
@@ -26,14 +26,14 @@
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: var(--fs-section-title);
   color: var(--blue);
   margin-bottom: 1.5rem;
   font-weight: 700;
 }
 
 .description {
-  font-size: 1.2rem;
+  font-size: var(--fs-lead);
   color: #666;
   margin-bottom: 2.5rem;
   line-height: 1.6;
@@ -50,7 +50,7 @@
 
 .suggestions h2 {
   color: var(--blue);
-  font-size: 1.3rem;
+  font-size: clamp(1.1rem, 0.95rem + 0.6vw, 1.3rem);
   margin-bottom: 1rem;
   font-weight: 600;
 }
@@ -116,4 +116,41 @@
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(207, 161, 119, 0.2);
+}
+/* ── Tablet en kleiner ──────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .container {
+    padding: 1.5rem 1rem;
+    min-height: auto;
+  }
+
+  .content {
+    padding: 2rem 1.25rem;
+  }
+
+  .title {
+    margin-bottom: 1rem;
+    line-height: 1.25;
+  }
+
+  .description {
+    margin-bottom: 1.75rem;
+  }
+
+  .suggestions {
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .actions {
+    /* Knoppen op volle breedte onder elkaar in plaats van half afgesneden. */
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    display: block;
+    text-align: center;
+    padding: 0.875rem 1.25rem;
+  }
 }

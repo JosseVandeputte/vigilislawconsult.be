@@ -14,6 +14,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* Onder ~1300px is de lijst breder dan haar kolom en stond de tekst
+       tegen de schermrand. Waar ze wel past, verandert dit niets. */
+    padding-inline: 1rem;
 }
 
 .footerLinks li {
@@ -50,3 +53,73 @@ p.footerCopyright {
     align-items: center;
 }
 
+.footerLogo img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Goud op donkerblauw: duidelijk zichtbare focusrand. */
+.footer :focus-visible {
+    outline-color: var(--brown);
+}
+
+/* ── Tablet: logo onder de twee tekstkolommen ───────────────────── */
+@media (max-width: 1023px) {
+    .footerContainer {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 2rem 1.5rem 0;
+    }
+
+    .footerLogo {
+        grid-column: 1 / -1;
+        margin-top: 1rem;
+    }
+
+    .footerLogo img {
+        width: 150px;
+    }
+}
+
+/* ── Telefoon: alles onder elkaar ───────────────────────────────── */
+@media (max-width: 767px) {
+    .footerContainer {
+        grid-template-columns: 1fr;
+        padding: 1.5rem 1rem 0;
+        text-align: center;
+    }
+
+    .footerLinks {
+        order: 2;
+    }
+
+    .footerLinks li {
+        margin: 0;
+    }
+
+    .footerLinks li a {
+        /* Volwaardige aanraakzone in plaats van alleen de tekst. */
+        display: block;
+        padding: 0.75rem 0;
+    }
+
+    .footerContact {
+        order: 1;
+    }
+
+    .footerContact p {
+        margin: 0.3rem 0;
+        /* Rekeningnummer en ondernemingsnummer breken niet vanzelf af. */
+        overflow-wrap: anywhere;
+    }
+
+    .footerLogo {
+        order: 3;
+        margin: 1.5rem 0 0;
+        padding-bottom: 2rem;
+    }
+
+    .footerLogo img {
+        width: 120px;
+    }
+}
